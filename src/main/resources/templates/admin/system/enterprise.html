@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>企业维护</title>
+    <link rel="stylesheet" type="text/css" th:href= "@{/layui/css/layui.css}"  />
+    <link rel="stylesheet" type="text/css" th:href= "@{/css/admin.css}" />
+    <link rel="stylesheet" type="text/css" th:href= "@{/jqGrid/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href= "@{/jqGrid/css/ui.jqgrid-bootstrap.css}" />
+    <link rel="stylesheet" type="text/css"  th:href= "@{/css/loading.css}" >
+    <link rel="stylesheet" type="text/css"  th:href= "@{/css/iconfont.css}" >
+
+    <script type="text/javascript" th:src="@{/js/jquery-1.11.1.js}"></script>
+    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+    <script type="text/javascript" th:src="@{/jqGrid/js/i18n/grid.locale-cn.js}"  ></script>
+    <script type="text/javascript" th:src="@{/jqGrid/js/jquery.jqGrid.min.js}" ></script>
+    <script type="text/javascript" th:src="@{/js/div-resize.js}"></script>
+    <script type="text/javascript" th:src="@{/miniDialog/MiniDialog.js}"></script>
+    <script type="text/javascript" th:src="@{/jqGrid/bootstrap/js/bootstrap.min.js}"></script>
+</head>
+<body>
+<div class="containerPen">
+    <div class="loading">
+        <div class="slice">
+            <div data-loader="circle-side"></div>
+        </div>
+    </div>
+</div>
+<div class="jsplite_main_right">
+    <div class="page-content-wrap">
+        <form class="layui-form" action="">
+            <div class="layui-form-item">
+                <div style="float: left;">
+                    <div class="layui-inline tool-btn">
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button id="addEnterprise" type="button" class="btn btn-default"><i class="layui-icon">&#xe654;</i><span class="cus-buttongroup-fontsize">新增</span></button>
+                            <button id="updateEnterprise" type="button" class="btn btn-default"><i class="layui-icon">&#xe642;</i><span class="cus-buttongroup-fontsize">修改</span></button>
+                            <button id="deleteEnterprise" type="button" class="btn btn-default"><i class="layui-icon">&#xe640;</i><span class="cus-buttongroup-fontsize">删除</span></button>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button id="updateIsUse" type="button" class="opt-button">
+                            <i class="iconfont icon-qiyongtingyong"></i><span class="cus-buttongroup-fontsize">启用|停用</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="layui-form" id="table-list">
+            <table id="jqGrid"></table>
+            <div id="jqGridPager"></div>
+        </div>
+    </div>
+    <div id="cd-shadow-layer"></div>
+</div>
+</body>
+<script>
+    $(window).load(function() {
+        $('.containerPen').hide();
+    });
+
+    //监听div大小变化事件，自适应屏幕宽度
+    $(".jsplite_main_right").resize(function() {
+        $("#jqGrid").setGridWidth($(".jsplite_main_right").width() - 30);
+        $("#jqGrid").setGridHeight($(window).height() - 180);
+    });
+
+    $(document).ready(function() {
+        //初始化表格
+        $("#jqGrid").jqGrid({
+            url: '[[@{/system/enterprise/getEnterprise}]]',
+            mtype: "POST",
+            styleUI: 'Bootstrap',
+            datatype: "json",
+            colModel: [{
+                label: '企业ID',
+                name: 'enterpriseId',
+                key: true,
+                width: 75,
+                hidden:true
+            },
+                {
+                    label: 'logo',
+                    name: 'enterpriseLogo',
+                    width: 100,
+                    formatter: formatLogo
+                },
+                {
+                    label: '企业名称',
+                    name: 'enterpriseName',
+                    width: 130
+                },
+                {
+                    label: '英文简称',
+                    name: 'enterpriseEnglishName',
+                    width: 50
+                },
+                {
+                    label: '企业地址',
+                    name: 'enterpriseAddr',
+                    width: 170
+                },
+                {
+                    label: '联系人',
+                    name: 'enterpriseLinkMen',
+                    width: 50
+                },
+                {
+                    label: '联系电话',
+                    name: 'enterpriseTel',
+                    width: 60
+                },
+                {
+                    label: '注册时间',
+                    name: 'enterpriseRegDate',
+                    width: 60
+                },
+                {
+                    label: '截至时间',
+                    name: 'enterpriseEndDate',
+                    width: 60
+                },
+                {
+                    label: '使用状态',
+                    name: 'enterpriseIsUse',
+                    width: 40,
+                    formatter: formatIsUse
+                },
+                {
+                    name: 'enterpriseIsUse',
+                    hidden: true
+                },
+                {
+                    label: '创建时间',
+                    name: 'createDate',
+                    width: 80
+                }
+            ],
+            altRows: true,//隔行换色
+            viewrecords: true,
+            shrinkToFit: true, //宽度自适应
+            height: $(window).height() - 180,
+            width: $(window).width() * 0.98 - 320,
+            rowNum:15,
+            pager: "#jqGridPager",
+            pagerpos: 'left',
+            recordpos: 'right'
+        });
+    });
+
+    /** 功能描述: 格式化 logo
+     * @param null
+    * @return:
+    * @Author: lj
+    * @Date: 2019/10/30 10:15
+    */
+    function formatLogo(cellValue, grid, rows, state){
+        if(cellValue == "" || cellValue == null){
+            return "";
+        }else{
+            return "<img src='"+cellValue+"' style='width: 150px; height: 50px' />";
+        }
+
+    }
+
+    /** 功能描述: 格式化 启用| 停用
+     * @param null
+    * @return:
+    * @Author: lj
+    * @Date: 2019/10/21 11:17
+    */
+    function formatIsUse(cellValue, grid, rows, state) {
+        if(cellValue == 0){
+            return "<span class='layui-badge layui-bg-green '>启用</span>";
+        }else{
+            return "<span class='layui-badge'>停用</span>";
+        }
+    }
+
+    /**
+     新增企业
+     **/
+    $('#addEnterprise').click(function() {
+        var addDialog = Dialog({
+            title: "新增",
+            width: 800,
+            iframeContent: {
+                id: "add-enterprise-iframe",
+                src: "[[@{/system/enterprise/skipPageToAddEnterprise}]]",
+                height: $(window).height()-220
+            },
+            showButton: true,
+            ok: {
+                notClose: true,
+                callback: function () {
+                    if($("#add-enterprise-iframe")[0].contentWindow.valid()){ //表单元素验证通过
+                        dialog_LoadingBtn();//确定按钮置为loading
+                        setTimeout(function(){
+                            var rtnVal = $("#add-enterprise-iframe")[0].contentWindow.submitForm(); //提交表单
+                            if(rtnVal.code != "success" ){
+                                dialog_ResetBtn();//取消loading,重置确定按钮
+                                window.parent.danger(rtnVal.code, rtnVal.msg);//操作失败提示
+                            }else{
+                                //业务处理
+                                reloadGrid(1);//重新加载表格
+                                dialog_ResetBtn();//取消loading,重置确定按钮
+                                Dialog.close( addDialog );
+                                window.parent.success(rtnVal.msg);//操作成功提示
+                            }
+                        }, 300);
+                    }
+                }
+            }
+        });
+    })
+
+    /**
+     修改企业
+     **/
+    $('#updateEnterprise').click(function() {
+
+        var rowId = $("#jqGrid").jqGrid("getGridParam","selrow");
+        if(rowId == null){
+            layer.msg('请选择修改的企业');
+            return false;
+        }
+        var rowData = $("#jqGrid").jqGrid("getRowData",rowId);
+        var updateDialog = Dialog({
+            title: "修改",
+            width: 800,
+            iframeContent: {
+                id: "update-enterprise-iframe",
+                src: "[[@{/system/enterprise/skipPageToUpdateEnterprise}]]?enterpriseId="+rowData.enterpriseId,
+                height: $(window).height()-220
+            },
+            showButton: true,
+            ok: {
+                notClose: true,
+                callback: function () {
+                    if($("#update-enterprise-iframe")[0].contentWindow.valid()){ //表单元素验证通过
+                        dialog_LoadingBtn();//确定按钮置为loading
+                        setTimeout(function(){
+                            var rtnVal = $("#update-enterprise-iframe")[0].contentWindow.submitForm(); //提交表单
+                            if(rtnVal.code != "success" ){
+                                window.parent.danger(rtnVal.code, rtnVal.msg);//操作失败提示
+                            }else{
+                                //业务处理
+                                reloadGrid($("#jqGrid").getGridParam('page'));//重新加载表格
+                                Dialog.close(updateDialog);
+                                window.parent.success(rtnVal.msg);//操作成功提示
+                            }
+                        }, 300);
+                    }
+                }
+            }
+        });
+    })
+
+    /** 功能描述: 删除企业
+     * @param null
+    * @return:
+    * @Author: lj
+    * @Date: 2019/10/21 11:00
+    */
+    $('#deleteEnterprise').click(function() {
+        var rowId = $("#jqGrid").jqGrid("getGridParam","selrow");
+        if(rowId == null){
+            layer.msg('请选择删除的企业');
+            return false;
+        }
+        var rowData = $("#jqGrid").jqGrid("getRowData",rowId);
+        var delDialog = Dialog({
+            title: "询问",
+            content: "您确认要删除 【"+rowData.enterpriseName+"】 吗？",
+            ok: {
+                waiting: true,
+                waitingText: "删除中",
+                callback: function () {
+                    $.ajax({
+                        type: 'post',
+                        async: true,
+                        url: "[[@{/system/enterprise/deleteEnterprise}]]",
+                        data:{
+                            "enterpriseId":rowData.enterpriseId
+                        },
+                        dataType: "json",
+                        timeout: 8000,
+                        beforeSend: function() {
+
+                        },
+                        complete: function(XMLHttpRequest, status) {
+                        },
+                        success: function(res) {
+                            if(res.code == "success"){
+                                reloadGrid($("#jqGrid").getGridParam('page'));//重新加载表格
+                                Dialog.close( delDialog );
+                                window.parent.success(res.msg);//操作成功提示
+                            }else{
+                                Dialog.close( delDialog );
+                                window.parent.danger(res.code,res.msg);//操作失败提示
+                            }
+                        },
+                        error: function(xhr, textStatus) {
+                            window.parent.danger(xhr.status,"error");//操作失败提示
+                        }
+                    });
+                }
+            }
+        });
+    })
+    
+    /** 功能描述: 启用|停用
+     * @param null
+    * @return:
+    * @Author: lj
+    * @Date: 2019/10/21 11:00
+    */
+    $('#updateIsUse').click(function() {
+        var rowId = $("#jqGrid").jqGrid("getGridParam","selrow");
+        if(rowId == null){
+            layer.msg('请选择设置的企业');
+            return false;
+        }
+        var rowData = $("#jqGrid").jqGrid("getRowData",rowId);
+        var delDialog = Dialog({
+            title: "询问",
+            content: "您确认要 【"+(rowData.enterpriseIsUse == 0 ? "停用" :"启用") +"】 吗？",
+            ok: {
+                waiting: true,
+                waitingText: "设置中",
+                callback: function () {
+                    $.ajax({
+                        type: 'post',
+                        async: true,
+                        url: "[[@{/system/enterprise/updateIsUse}]]",
+                        data:{
+                            "enterpriseId":rowData.enterpriseId,
+                            "enterpriseIsUse":rowData.enterpriseIsUse == 0 ?  1 : 0
+                        },
+                        dataType: "json",
+                        timeout: 8000,
+                        beforeSend: function() {
+
+                        },
+                        complete: function(XMLHttpRequest, status) {
+                        },
+                        success: function(res) {
+                            if(res.code == "success"){
+                                reloadGrid($("#jqGrid").getGridParam('page'));//重新加载表格
+                                Dialog.close( delDialog );
+                                window.parent.success(res.msg);//操作成功提示
+                            }else{
+                                Dialog.close( delDialog );
+                                window.parent.danger(res.msg);//操作失败提示
+                            }
+                        },
+                        error: function(xhr, textStatus) {
+                            window.parent.danger(xhr.status,"error");//操作失败提示
+                        }
+                    });
+                }
+            }
+        });
+    })
+
+
+    /*
+    重新加载表格
+     */
+    function reloadGrid(page){
+        $("#jqGrid").jqGrid("setGridParam", {
+            postData: {},
+            page : page
+        }).trigger("reloadGrid");
+    }
+
+</script>
+
+</html>

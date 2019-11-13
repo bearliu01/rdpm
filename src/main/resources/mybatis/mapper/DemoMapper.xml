@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pengniao.rdpm.demo.mapper.DemoMapper">
+
+    <resultMap type="Demo" id="demoResult">
+        <id property="id" column="id"/>
+        <id property="name" column="name"/>
+        <id property="age" column="age"/>
+        <id property="createTime" column="createTime"/>
+    </resultMap>
+
+
+    <select id="getDemoById" resultMap="demoResult" parameterType="String">
+		SELECT id,name,age,createTime FROM Demo WHERE id = #{id}
+	</select>
+
+    <insert id="addDemo" parameterType="com.pengniao.rdpm.entity.Demo">
+		INSERT INTO Demo(id,name,age,createTime) VALUES(#{id},#{name},#{age},#{createTime})
+	</insert>
+
+    <select id="getDemo" resultMap="demoResult">
+        SELECT id,name,age,createTime FROM Demo
+        ORDER BY createTime DESC LIMIT
+        #{startPage,jdbcType=INTEGER},#{limit,jdbcType=INTEGER}
+    </select>
+
+    <select id="queryDemoCount"  resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM Demo
+    </select>
+
+
+</mapper>

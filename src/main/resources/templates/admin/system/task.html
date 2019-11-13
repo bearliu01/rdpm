@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>定时任务</title>
+    <link rel="stylesheet" type="text/css" th:href= "@{/layui/css/layui.css}"  />
+    <link rel="stylesheet" type="text/css" th:href= "@{/css/admin.css}" />
+    <link rel="stylesheet" type="text/css" th:href= "@{/jqGrid/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href= "@{/jqGrid/css/ui.jqgrid-bootstrap.css}" />
+    <link rel="stylesheet" type="text/css"  th:href= "@{/css/loading.css}" >
+    <link rel="stylesheet" type="text/css"  th:href= "@{/css/iconfont.css}" >
+
+    <script type="text/javascript" th:src="@{/js/jquery-1.11.1.js}"></script>
+    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+    <script type="text/javascript" th:src="@{/jqGrid/js/i18n/grid.locale-cn.js}"  ></script>
+    <script type="text/javascript" th:src="@{/jqGrid/js/jquery.jqGrid.min.js}" ></script>
+    <script type="text/javascript" th:src="@{/js/div-resize.js}"></script>
+    <script type="text/javascript" th:src="@{/miniDialog/MiniDialog.js}"></script>
+    <script type="text/javascript" th:src="@{/jqGrid/bootstrap/js/bootstrap.min.js}"></script>
+</head>
+<body>
+<div class="containerPen">
+    <div class="loading">
+        <div class="slice">
+            <div data-loader="circle-side"></div>
+        </div>
+    </div>
+</div>
+<div class="jsplite_main_right">
+    <div class="page-content-wrap">
+        <form class="layui-form" action="">
+            <div class="layui-form-item">
+                <div style="float: left;">
+                    <div class="layui-inline tool-btn">
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button id="addTask" type="button" class="btn btn-default"><i class="layui-icon">&#xe654;</i><span class="cus-buttongroup-fontsize">新增</span></button>
+                            <button id="updateEnterprise" type="button" class="btn btn-default"><i class="layui-icon">&#xe642;</i><span class="cus-buttongroup-fontsize">修改</span></button>
+                            <button id="deleteEnterprise" type="button" class="btn btn-default"><i class="layui-icon">&#xe640;</i><span class="cus-buttongroup-fontsize">删除</span></button>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button id="updateIsUse" type="button" class="opt-button">
+                            <i class="iconfont icon-qiyongtingyong"></i><span class="cus-buttongroup-fontsize">启用|停用</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="layui-form" id="table-list">
+            <table id="jqGrid"></table>
+            <div id="jqGridPager"></div>
+        </div>
+    </div>
+    <div id="cd-shadow-layer"></div>
+</div>
+</body>
+<script>
+    $(window).load(function() {
+        $('.containerPen').hide();
+    });
+    //监听div大小变化事件，自适应屏幕宽度
+    $(".jsplite_main_right").resize(function() {
+        $("#jqGrid").setGridWidth($(".jsplite_main_right").width() - 30);
+        $("#jqGrid").setGridHeight($(window).height() - 180);
+    });
+
+    $(document).ready(function() {
+        //初始化表格
+        $("#jqGrid").jqGrid({
+            url: '[[@{/system/enterprise/getEnterprise}]]',
+            mtype: "POST",
+            styleUI: 'Bootstrap',
+            datatype: "json",
+            colModel: [{
+                label: '任务ID',
+                name: 'id',
+                key: true,
+                hidden:true
+            },
+                {
+                    label: '任务名称',
+                    name: 'jobName',
+                    width: 100
+                },
+                {
+                    label: '任务名称组',
+                    name: 'jobGroupName',
+                    width: 130
+                },
+                {
+                    label: '触发器名称',
+                    name: 'triggerName',
+                    width: 50
+                },
+                {
+                    label: '触发器组',
+                    name: 'triggerGroupName',
+                    width: 170
+                },
+                {
+                    label: '任务类',
+                    name: 'jobClass',
+                    width: 50
+                },
+                {
+                    label: '任务描述',
+                    name: 'jobDescription',
+                    width: 60
+                },
+                {
+                    label: 'cron表达式',
+                    name: 'cronExpression',
+                    width: 60
+                },
+                {
+                    label: '任务开始时间',
+                    name: 'startTime',
+                    width: 60
+                }
+                ,
+                {
+                    label: '任务结束时间',
+                    name: 'endTime',
+                    width: 60
+                }
+                ,
+                {
+                    label: '任务状态',
+                    name: 'state',
+                    width: 60
+                }
+            ],
+            altRows: true,//隔行换色
+            viewrecords: true,
+            shrinkToFit: true, //宽度自适应
+            height: $(window).height() - 180,
+            width: $(window).width() * 0.98 - 320,
+            rowNum:15,
+            pager: "#jqGridPager",
+            pagerpos: 'left',
+            recordpos: 'right'
+        });
+    });
+
+    /** 功能描述: 新增任务
+     * @param null
+    * @return:
+    * @Author: lj
+    * @Date: 2019/11/7 16:34
+    */
+    $('#addTask').click(function() {
+        var addDialog = Dialog({
+            title: "新增",
+            width: 800,
+            iframeContent: {
+                id: "add-task-iframe",
+                src: "[[@{/system/task/skipPageToAddTask}]]",
+                height: $(window).height()-220
+            },
+            showButton: true,
+            ok: {
+                notClose: true,
+                callback: function () {
+                    if($("#add-task-iframe")[0].contentWindow.valid()){ //表单元素验证通过
+                        dialog_LoadingBtn();//确定按钮置为loading
+                        setTimeout(function(){
+                            var rtnVal = $("#add-task-iframe")[0].contentWindow.submitForm(); //提交表单
+                            if(rtnVal.code != "success" ){
+                                dialog_ResetBtn();//取消loading,重置确定按钮
+                                window.parent.danger(rtnVal.code, rtnVal.msg);//操作失败提示
+                            }else{
+                                //业务处理
+                                reloadGrid(1);//重新加载表格
+                                dialog_ResetBtn();//取消loading,重置确定按钮
+                                Dialog.close( addDialog );
+                                window.parent.success(rtnVal.msg);//操作成功提示
+                            }
+                        }, 300);
+                    }
+                }
+            }
+        });
+    })
+</script>
+</html>

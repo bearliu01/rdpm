@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>新增mongodb-demo</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <!-- load css -->
+    <link rel="stylesheet" type="text/css"  th:href= "@{/layui/css/layui.css}" />
+    <link rel="stylesheet" type="text/css"  th:href= "@{/css/admin.css}" />
+    <link rel="stylesheet" type="text/css"  th:href= "@{/jqGrid/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css"  th:href= "@{/css/loading.css}">
+
+
+    <link rel="stylesheet" type="text/css" th:href= "@{/validform/validform.css}" />
+
+
+    <style type="text/css">
+
+    </style>
+
+</head>
+
+<body>
+<div class="containerPen">
+    <div class="loading">
+        <div class="slice">
+            <div data-loader="circle-side"></div>
+        </div>
+    </div>
+</div>
+<div class="layui-fluid larry-wrapper form-margin" >
+    <div class="layui-row layui-col-space30">
+        <div class="layui-col-xs24">
+            <section class="panel panel-padding">
+                <form id="form_mongodemo" class="layui-form" action="" >
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"><span class="required">*</span>用户姓名</label>
+                        <div class="layui-input-block" style="position: relative;">
+                            <input type="text" name="name"  datatype="s2-16" errormsg="姓名至少2个字符,最多16个字符" placeholder="必填|不能输入特殊字符" autocomplete="off" maxlength="20" class="layui-input form-required">
+                            <div style="position: absolute;top:5px;right:6px">
+                                <div class="Validform_checktip"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">用户年龄</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="age" datatype="s5-16" errormsg="昵称至少5个字符,最多16个字符" placeholder="必填|不能输入特殊字符" autocomplete="off" maxlength="25" class="layui-input ">
+                            <div style="position: absolute;top:5px;right:6px">
+                                <div class="Validform_checktip"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </section>
+        </div>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript" th:src="@{/js/jquery-1.11.1.js}" ></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}" ></script>
+<script type="text/javascript" th:src="@{/js/request-param.js}"></script>
+<script type="text/javascript" th:src="@{/validform/validform_v5.3.2.js}"></script>
+
+
+<script>
+    var id = request("id"); //获取url值
+
+    var validform = null;//表单验证对象
+
+    $(window).load(function() {
+        $('.containerPen').hide();
+    });
+
+
+    $(function() {
+        //初始化表单验证
+        validform = $(".layui-form").Validform({
+            tiptype:2
+        });
+    });
+
+    layui.use(['jquery','form','laydate'], function() {
+        var $ = layui.jquery,
+            form = layui.form;
+        laydate = layui.laydate;
+        laydate.render({
+            elem: '#test1',
+            done: function(value, date, endDate){
+                validform.check(false, "#test1"); //对日期的验证
+            }
+        });
+    });
+
+    /**
+     ** 表单元素验证
+     **/
+    function valid(){
+        //是给予提示
+        if(validform.check(false)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     ** 提交表单
+     **/
+    function submitForm(){
+        var rtnVal = null;
+        var name = $("#form_mongodemo input[name=name]").val();//用户姓名
+        var age = $("#form_mongodemo input[name=age]").val();//用户年龄
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: "addMongonDemo",
+            data:{
+                "id":1,
+                "name":name,
+                "age":age
+            },
+            dataType: "json",
+            timeout: 8000,
+            beforeSend: function() {
+            },
+            complete: function(XMLHttpRequest, status) {
+            },
+            success: function(res) {
+                rtnVal = res;
+            },
+            error: function(xhr, textStatus) {
+                rtnVal = JSON.parse('{"code":'+xhr.status+', "msg":"服务器错误"}');
+            }
+        });
+        return rtnVal;
+    };
+
+</script>
+
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>创建企业管理员</title>
+    <link rel="stylesheet" type="text/css"  th:href= "@{/css/admin.css}" />
+    <link rel="stylesheet" type="text/css"  th:href= "@{/jqGrid/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css"  th:href= "@{/css/loading.css}">
+    <link rel="stylesheet" type="text/css"  th:href= "@{/layui/css/layui.css}" />
+    <link rel="stylesheet" type="text/css" th:href= "@{/validform/validform.css}" />
+
+
+    <script type="text/javascript" th:src="@{/js/jquery-1.11.1.js}" ></script>
+    <script type="text/javascript" th:src="@{/layui/layui.js}" ></script>
+    <script type="text/javascript" th:src="@{/js/request-param.js}"></script>
+    <script type="text/javascript" th:src="@{/validform/validform_v5.3.2.js}"></script>
+</head>
+<body>
+<div class="containerPen">
+    <div class="loading">
+        <div class="slice">
+            <div data-loader="circle-side"></div>
+        </div>
+    </div>
+</div>
+<div class="layui-fluid larry-wrapper form-margin" >
+    <fieldset class="layui-elem-field">
+        <legend>生成登录账号</legend>
+        <div class="layui-field-box">
+            <form id="form_administrator" class="layui-form cus-form" >
+            <div class="layui-form-item">
+                <div class="layui-inline" style="width: 280px;">
+                    <select id="enterprise" name="enterpriseId" datatype="*" lay-filter="enterpriseFilter">
+                        <option value="">请选择单位</option>
+                        <option th:each="enterprise:${enterpriseList}" th:value="${enterprise.enterpriseId}" th:text="${enterprise.enterpriseName}"></option>
+                    </select>
+
+                </div>
+                <div class="layui-inline">
+                    <a class="layui-btn" lay-filter="" onclick="generateAccount()">生成账号</a>
+                </div>
+                <div class="layui-inline">
+                    <span id="show_loading" style="display: none"><img th:src="@{/images/loading.gif}" /></span>
+                    <span id="show_loginName" style="display: none"></span>
+                </div>
+                <input id="txt_loginName" name="loginName" type="hidden" value="">
+            </div>
+            </form>
+        </div>
+    </fieldset>
+</div>
+
+
+
+
+</body>
+
+<script>
+
+    var validform = null;//表单验证对象
+
+    $(window).load(function() {
+        $('.containerPen').hide();
+    });
+
+    layui.use(['jquery','form'], function(){
+        var $ = layui.jquery,
+            form = layui.form;
+
+        form.on('select(enterpriseFilter)', function(data){
+            $("#txt_loginName").val("");
+            $("#show_loading").css('display','none');
+            $("#show_loginName").css('display','none');
+
+        });
+    })
+
+
+
+    $(function() {
+        //初始化表单验证
+        validform = $(".layui-form").Validform({
+            tiptype:2
+        });
+    });
+
+    /** 功能描述: 生成账户
+     * @param null
+    * @return:
+    * @Author: lj
+    * @Date: 2019/10/23 11:32
+    */
+    function generateAccount(){
+        $("#show_loading").css('display','none');
+        $("#show_loginName").css('display','none');
+        $("#txt_loginName").val("");
+        if(validform.check(false)){
+            $("#show_loading").css('display','block');
+            var enterpriseId = $('#enterprise option:selected').val();//企业ID$('#test option:selected').val();
+            $.ajax({
+                type: 'post',
+                async: false,
+                url: "[[@{/system/administrator/generateAccount}]]",
+                data:{
+                    "enterpriseId":enterpriseId
+                },
+                dataType: "json",
+                timeout: 8000,
+                beforeSend: function() {
+                },
+                complete: function(XMLHttpRequest, status) {
+                    $("#show_loading").css('display','none');
+                },
+                success: function(res) {
+                    if(res.code == "success"){
+                        $("#txt_loginName").val(res.msg);
+                    }else{
+                        $("#txt_loginName").val("");
+                    }
+                    $("#show_loginName").html(res.msg);
+                    $("#show_loginName").css('display','block');
+                },
+                error: function(xhr, textStatus) {
+                    $("#txt_loginName").val("");
+                    $("#show_loginName").html(xhr.status)
+                    $("#show_loginName").css('display','block');
+                    // rtnVal = JSON.parse('{"code":'+xhr.status+', "msg":"服务器错误"}');
+                }
+            });
+        }
+
+    }
+
+    function valid(){
+        if($("#form_administrator input[name=loginName]").val() != ""){
+            return true;
+        }else{
+            layer.msg("无生成的账号");
+            return false;
+        }
+    }
+
+    /** 功能描述: 提交账户
+     * @param null
+    * @return:
+    * @Author: lj
+    * @Date: 2019/10/23 14:39
+    */
+    function submitAccount(){
+        var rtnVal = null;
+        var loginName = $("#form_administrator input[name=loginName]").val();//用户名
+        var enterpriseId = $('#enterprise option:selected').val();//所属企业
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: "[[@{/system/administrator/addAdministrator}]]",
+            data:{
+                "loginName":loginName,
+                "enterpriseId":enterpriseId
+            },
+            dataType: "json",
+            timeout: 8000,
+            beforeSend: function() {
+            },
+            complete: function(XMLHttpRequest, status) {
+            },
+            success: function(res) {
+                rtnVal = res;
+            },
+            error: function(xhr, textStatus) {
+                rtnVal = JSON.parse('{"code":'+xhr.status+', "msg":"服务器错误"}');
+            }
+        });
+        return rtnVal;
+    };
+
+</script>
+
+</html>

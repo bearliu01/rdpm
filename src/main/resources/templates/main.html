@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="renderer" content="webkit">
+  		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+
+		<title>CAMS管理系统</title>
+		<link rel="stylesheet" type="text/css"  th:href= "@{/layui/css/layui.css}" />
+		<link rel="stylesheet" type="text/css " th:href= "@{/css/admin.css}" />
+		<link rel="stylesheet" type="text/css"  th:href= "@{/css/iconfont.css}" />
+		<link rel="stylesheet" type="text/css"  th:href= "@{/toastr/toastr.css}" />
+		<link rel="stylesheet" type="text/css"  th:href= "@{/css/iconfont.css}" />
+
+		<script type="text/javascript" th:src="@{/js/jquery-1.11.1.js}" ></script>
+		<script type="text/javascript" th:src="@{/js/message.js}"></script>
+		<script type="text/javascript" th:src="@{/toastr/toastr.min.js}" ></script>
+		<script type="text/javascript" th:src="@{/miniDialog/MiniDialog.js}"></script>
+		<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+		<script type="text/javascript" th:src="@{/js/common.js}" ></script>
+		<script type="text/javascript" th:src="@{/js/main.js}" ></script>
+		<script type="text/javascript" th:src="@{/layui/lay/modules/layer.js}" ></script>
+		<script type="text/javascript" th:src="@{/lib/echarts/echarts.js}" ></script>
+
+
+	</head>
+	<body>
+		<div class="main-layout" id='main-layout'>
+			<!--侧边栏-->
+			<div class="main-layout-side">
+				<div class="m-logo">
+				</div>
+				<ul class="layui-nav layui-nav-tree" lay-filter="leftNav">
+					<shiro:hasPermission name="base_info">
+				  <li class="layui-nav-item layui-nav-itemed">
+					  <a href="javascript:;"><i class="iconfont icon-ziyuan1"></i>基础信息</a>
+					  <dl class="layui-nav-child">
+						<shiro:hasPermission name="demo">
+						  <dd><a href="javascript:;" data-url="skipPageToDemo" data-id='1' data-text="DEMO"><span class="l-line"></span>DEMO</a></dd>
+						</shiro:hasPermission>
+						<shiro:hasPermission name="mongoDBdemo">
+							<dd><a href="javascript:;" data-url="skipPageToMongoDBDEMO" data-id='2' data-text="MongoDB-DEMO"><span class="l-line"></span>MongoDB-DEMO</a></dd>
+						</shiro:hasPermission>
+						<shiro:hasPermission name="zutai">
+							<dd><a href="javascript:;" data-url="skipPageToZutai" data-id='3' data-text="组态图测试"><span class="l-line"></span>组态图测试</a></dd>
+						</shiro:hasPermission>
+				    </dl>
+				  </li>
+					</shiro:hasPermission>
+				  <!--<li class="layui-nav-item">-->
+				    <!--<a href="javascript:;"><i class="iconfont icon-zichan"style="font-size: 13px;"></i>资产管理</a>-->
+				    <!--<dl class="layui-nav-child">-->
+				      <!--<dd><a href="javascript:;" data-url="article-list.html" data-id='7' data-text="资产列表"><span class="l-line"></span>资产列表</a></dd>-->
+				      <!--<dd><a href="javascript:;" data-url="danye-list.html" data-id='8' data-text="领用&退库"><span class="l-line"></span>领用&退库</a></dd>-->
+				      <!--<dd><a href="javascript:;" data-url="danye-list.html" data-id='9' data-text="借用&归还"><span class="l-line"></span>借用&归还</a></dd>-->
+				      <!--<dd><a href="javascript:;" data-url="danye-list.html" data-id='10' data-text="资产调拨"><span class="l-line"></span>资产调拨</a></dd>-->
+				      <!--<dd><a href="javascript:;" data-url="danye-list.html" data-id='11' data-text="维修管理"><span class="l-line"></span>维修管理</a></dd>-->
+				      <!--<dd><a href="javascript:;" data-url="danye-list.html" data-id='12' data-text="处置管理"><span class="l-line"></span>处置管理</a></dd>-->
+				      <!--<dd><a href="javascript:;" data-url="danye-list.html" data-id='13' data-text="盘点"><span class="l-line"></span>盘点</a></dd>-->
+				    <!--</dl>-->
+				  <!--</li>-->
+				  <!--<li class="layui-nav-item">-->
+				    <!--<a href="javascript:;"><i class="iconfont icon-haocai" style="font-size: 15px;"></i>耗材管理</a>-->
+				    <!--<dl class="layui-nav-child">-->
+				      <!--<dd><a href="javascript:;" data-url="article-list.html" data-id='14' data-text="物料分类"><span class="l-line"></span>物料分类</a></dd>-->
+				      <!--<dd><a href="javascript:;" data-url="danye-list.html" data-id='15' data-text="物料归档"><span class="l-line"></span>物料归档</a></dd>-->
+				      <!--<dd><a href="javascript:;" data-url="danye-list.html" data-id='16' data-text="仓库档案"><span class="l-line"></span>仓库档案</a></dd>-->
+				      <!--<dd><a href="javascript:;" data-url="danye-list.html" data-id='17' data-text="入库单"><span class="l-line"></span>入库单</a></dd>-->
+				      <!--<dd><a href="javascript:;" data-url="danye-list.html" data-id='18' data-text="出库单"><span class="l-line"></span>出库单</a></dd>-->
+				      <!--<dd><a href="javascript:;" data-url="danye-list.html" data-id='19' data-text="现存量查询"><span class="l-line"></span>现存量查询</a></dd>-->
+				      <!--<dd><a href="javascript:;" data-url="danye-list.html" data-id='20' data-text="耗材领用查询"><span class="l-line"></span>耗材领用查询</a></dd>-->
+				    <!--</dl>-->
+				  <!--</li>-->
+				  <!--<li class="layui-nav-item">-->
+				    <!--<a href="javascript:;"><i class="iconfont icon-chongdianzhan"style="font-size: 16px;"></i>充电站资产信息</a>-->
+				    <!--<dl class="layui-nav-child">-->
+				      <!--<dd><a href="javascript:;" data-url="admin/chargedstation-assets/chargedstation/chargedstation.html" data-id='14' data-text="充电站&桩设置"><span class="l-line"></span>充电站&桩设置</a></dd>-->
+				      <!--<dd><a href="javascript:;" data-url="danye-list.html" data-id='15' data-text="耗材分类"><span class="l-line"></span>耗材分类</a></dd>-->
+				      <!--<dd><a href="javascript:;" data-url="danye-list.html" data-id='16' data-text="耗材维护"><span class="l-line"></span>耗材维护</a></dd>-->
+				      <!--<dd><a href="javascript:;" data-url="danye-list.html" data-id='16' data-text="模板设置"><span class="l-line"></span>模板设置</a></dd>-->
+				    <!--</dl>-->
+				  <!--</li>-->
+				   <!--<li class="layui-nav-item">-->
+				    <!--<a href="javascript:;"><i class="iconfont icon-shujubaobiao"></i>数据报表</a>-->
+				    <!--<dl class="layui-nav-child">-->
+				      <!--<dd><a href="javascript:;" data-url="article-list.html" data-id='21' data-text="资产汇总查询"><span class="l-line"></span>资产汇总查询</a></dd>-->
+				      <!--<dd><a href="javascript:;" data-url="danye-list.html" data-id='22' data-text="资产履历"><span class="l-line"></span>资产履历</a></dd>-->
+				      <!--<dd><a href="javascript:;" data-url="danye-list.html" data-id='23' data-text="资产清单"><span class="l-line"></span>资产清单</a></dd>-->
+				      <!--<dd><a href="javascript:;" data-url="danye-list.html" data-id='24' data-text="资产折旧报表"><span class="l-line"></span>资产折旧报表</a></dd>-->
+				      <!--<dd><a href="javascript:;" data-url="danye-list.html" data-id='25' data-text="待归还资产报表"><span class="l-line"></span>待归还资产报表</a></dd>-->
+				      <!--<dd><a href="javascript:;" data-url="danye-list.html" data-id='26' data-text="到期资产查询"><span class="l-line"></span>到期资产查询</a></dd>-->
+				      <!--<dd><a href="javascript:;" data-url="danye-list.html" data-id='27' data-text="维保到期查询"><span class="l-line"></span>维保到期查询</a></dd>-->
+				    <!--</dl>-->
+				  <!--</li>-->
+				   <li class="layui-nav-item">
+				    <a href="javascript:;"><i class="iconfont icon-xitongguanli"></i>系统管理</a>
+				    <dl class="layui-nav-child">
+				      	<dd><a href="javascript:;" data-url="system/enterprise/skipPageToEnterprise" data-id='1001' data-text="企业维护"><span class="l-line"></span>企业维护</a></dd>
+						<dd><a href="javascript:;" data-url="system/administrators/skipPageToAdministrators" data-id='1002' data-text="企业管理员"><span class="l-line"></span>企业管理员</a></dd>
+				      	<dd><a href="javascript:;" data-url="system/user/skipPageToUser" data-id='1003' data-text="用户管理"><span class="l-line"></span>用户管理</a></dd>
+				      	<dd><a href="javascript:;" data-url="system/role/skipPageToRole" data-id='1004' data-text="角色"><span class="l-line"></span>角色</a></dd>
+						<dd><a href="javascript:;" data-url="system/right/skipPageToRight" data-id='1005' data-text="权限"><span class="l-line"></span>权限</a></dd>
+						<dd><a href="javascript:;" data-url="system/task/skipPageToTask" data-id='1006' data-text="定时任务"><span class="l-line"></span>定时任务</a></dd>
+				    </dl>
+				  </li>
+				 
+				</ul>
+			</div>
+			<!--右侧内容-->
+			<div class="main-layout-container">
+				<!--头部-->
+				<div class="main-layout-header">
+					<div class="menu-btn" id="hideBtn">
+						<a href="javascript:;">
+							<span class="iconfont">&#xe60e;</span>
+						</a>
+					</div>
+					<ul class="layui-nav" lay-filter="rightNav">
+					  <li class="layui-nav-item">
+						  	<a href="javascript:;" th:if="${session.user_session.isAdmin ==0}" onclick="updateEnterprise()" style="color: #8f94a1" th:text="${session.user_session.enterprise.enterpriseName}">
+								<!--<i class="iconfont">&#xe603;</i>-->
+							</a>
+						  <a href="javascript:;" th:if="${session.user_session.isAdmin ==1}"  style="color: #8f94a1" th:text="${session.user_session.enterprise.enterpriseName}"></a>
+					  </li>
+					  <li class="layui-nav-item" >
+						  <a href="javascript:;"  style="color: #8f94a1"  onclick="updateUser()">
+							  <i class="iconfont icon-guanliyuan" style="font-size: 18px"></i><span th:text="${session.user_session.loginName}"></span>
+						  </a>
+					  </li>
+						<li class="layui-nav-item" >
+							<a href="javascript:;"  style="color: #8f94a1" onclick="updateUserPwd()">
+								<i class="iconfont icon-xiugaimima" style="font-size: 18px"></i>重置密码
+							</a>
+						</li>
+					  <li class="layui-nav-item"><a href="javascript:;" style="color: #8f94a1" onclick="SignOut()">退出</a></li>
+					</ul>
+				</div>
+				<!--主体内容-->
+				<div class="main-layout-body">
+					<!--tab 切换-->
+					<div class="layui-tab layui-tab-brief main-layout-tab" lay-filter="tab" lay-allowClose="true">
+					  <ul class="layui-tab-title">
+					    <li class="layui-this welcome">后台主页</li>
+					  </ul>
+					  <div class="layui-tab-content">
+					    <div class="layui-tab-item layui-show" style="background: #f5f5f5;">
+					    	<iframe  th:src="welcome"  width="100%" height="100%" name="iframe" scrolling="auto" class="iframe" framborder="0"></iframe>
+					    </div>
+					  </div>
+					</div>
+				</div>
+			</div>
+			<!--遮罩-->
+			<div class="main-mask">
+				
+			</div>
+		</div>
+
+		
+	</body>
+
+	<script type="text/javascript">
+
+		//打开一个菜单其余菜单收缩
+		$('.layui-nav-item').click(function(){
+			$(this).siblings('li').attr('class','layui-nav-item');
+		})
+
+		/** 功能描述: 退出登录
+		 * @param null
+		 * @return:
+		 * @Author: lj
+		 * @Date: 2019/10/16 8:57
+		 */
+		function SignOut(){
+			 Dialog({
+				title: "询问",
+				content: "您确认要退出吗？",
+				ok: {
+					callback: function () {
+						window.location.href="[[@{/logout}]]";
+					}
+				}
+			});
+		}
+
+		/***
+		 操作成功提示
+		 ***/
+		function success(message) {
+			toastr.options.positionClass = 'toast-top-center';
+			toastr.options.timeOut = "1000";
+			toastr.success("",message);
+		}
+
+		/***
+		 操作失败提示
+		 ***/
+		function danger(status,message) {
+			if(status == 401){
+				window.location.href="[[@{/skipPageToLogin}]]";
+			}else{
+				toastr.options.positionClass = 'toast-top-center';
+				toastr.options.timeOut = "1500";
+				toastr.error("",message);
+			}
+
+		}
+
+		/** 功能描述: 企业管理员修改企业基本信息
+		 * @param null
+		* @return:
+		* @Author: lj
+		* @Date: 2019/10/30 15:41
+		*/
+		function updateEnterprise(){
+			var updateDialog = Dialog({
+				title: "修改企业基本信息",
+				width: 800,
+				iframeContent: {
+					id: "update-enterprisebase-iframe",
+					src: "[[@{/system/main/skipPageToUpdateEnterpriseBase}]]",
+					height: 550
+				},
+				showButton: true,
+				ok: {
+					notClose: true,
+					callback: function () {
+						if($("#update-enterprisebase-iframe")[0].contentWindow.valid()){ //表单元素验证通过
+							dialog_LoadingBtn();//确定按钮置为loading
+							setTimeout(function(){
+								var rtnVal = $("#update-enterprisebase-iframe")[0].contentWindow.submitForm(); //提交表单
+								if(rtnVal.code != "success" ){
+									dialog_ResetBtn();//取消loading,重置确定按钮
+									window.danger(rtnVal.code, rtnVal.msg);//操作失败提示
+								}else{
+									//业务处理
+									Dialog.close(updateDialog);
+									window.success(rtnVal.msg);//操作成功提示
+								}
+							}, 300);
+						}
+					}
+				}
+			});
+		}
+
+		/** 功能描述: 登陆用户更新自己的基本信息
+		 * @param null
+		* @return:
+		* @Author: lj
+		* @Date: 2019/10/30 17:13
+		*/
+		function updateUser(){
+			var updateDialog = Dialog({
+				title: "修改用户基本信息",
+				width: 800,
+				iframeContent: {
+					id: "update-userbase-iframe",
+					src: "[[@{/system/main/skipPageToUpdateUserBase}]]",
+					height: 350
+				},
+				showButton: true,
+				ok: {
+					notClose: true,
+					callback: function () {
+						if($("#update-userbase-iframe")[0].contentWindow.valid()){ //表单元素验证通过
+							dialog_LoadingBtn();//确定按钮置为loading
+							setTimeout(function(){
+								var rtnVal = $("#update-userbase-iframe")[0].contentWindow.submitForm(); //提交表单
+								if(rtnVal.code != "success" ){
+									dialog_ResetBtn();//取消loading,重置确定按钮
+									window.danger(rtnVal.code, rtnVal.msg);//操作失败提示
+								}else{
+									//业务处理
+									Dialog.close(updateDialog);
+									window.success(rtnVal.msg);//操作成功提示
+								}
+							}, 300);
+						}
+					}
+				}
+			});
+		}
+
+		function updateUserPwd(){
+			var updateDialog = Dialog({
+				title: "重置密码",
+				width: 800,
+				iframeContent: {
+					id: "update-userpwd-iframe",
+					src: "[[@{/system/main/skipPageToUpdatePassword}]]",
+					height: 300
+				},
+				showButton: true,
+				ok: {
+					notClose: true,
+					callback: function () {
+						if($("#update-userpwd-iframe")[0].contentWindow.valid()){ //表单元素验证通过
+							dialog_LoadingBtn();//确定按钮置为loading
+							setTimeout(function(){
+								var rtnVal = $("#update-userpwd-iframe")[0].contentWindow.submitForm(); //提交表单
+								if(rtnVal.code != "success" ){
+									dialog_ResetBtn();//取消loading,重置确定按钮
+									window.danger(rtnVal.code, rtnVal.msg);//操作失败提示
+								}else{
+									//业务处理
+									Dialog.close(updateDialog);
+									window.success(rtnVal.msg);//操作成功提示
+								}
+							}, 300);
+						}
+					}
+				}
+			});
+		}
+
+	</script>
+</html>

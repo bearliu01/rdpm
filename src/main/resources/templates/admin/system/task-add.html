@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>新增任务</title>
+    <link rel="stylesheet" type="text/css"  th:href= "@{/css/admin.css}" />
+    <link rel="stylesheet" type="text/css"  th:href= "@{/jqGrid/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css"  th:href= "@{/css/loading.css}">
+    <link rel="stylesheet" type="text/css"  th:href= "@{/layui/css/layui.css}" />
+    <link rel="stylesheet" type="text/css"  th:href= "@{/validform/validform.css}" />
+
+    <script type="text/javascript" th:src="@{/js/jquery-1.11.1.js}" ></script>
+    <script type="text/javascript" th:src="@{/layui/layui.js}" ></script>
+    <script type="text/javascript" th:src="@{/js/request-param.js}"></script>
+    <script type="text/javascript" th:src="@{/validform/validform_v5.3.2.js}"></script>
+</head>
+<body>
+<div class="containerPen">
+    <div class="loading">
+        <div class="slice">
+            <div data-loader="circle-side"></div>
+        </div>
+    </div>
+</div>
+<div class="layui-fluid larry-wrapper form-margin" >
+    <div class="layui-row layui-col-space30">
+        <div class="layui-col-xs24">
+            <section class="panel panel-padding">
+                <form id="form_enterprise" class="layui-form cus-form" action="" >
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" style="width: 120px"><span class="required">*</span>任务名称</label>
+                        <div class="layui-input-block" style="position: relative;">
+                            <input type="text" name="jobName"  datatype="*" nullmsg="请输入任务名称" placeholder="" autocomplete="off" maxlength="30" class="layui-input form-required"  style="width: 95%">
+                            <div style="position: absolute;top:8px;right:30px">
+                                <div class="Validform_checktip"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" style="width: 120px"><span class="required">*</span>任务组名</label>
+                        <div class="layui-input-block" style="position: relative;">
+                            <input type="text" name="jobGroupName"  datatype="*" nullmsg="请输入任务组名" placeholder="" autocomplete="off" maxlength="30" class="layui-input form-required" style="width: 95%">
+                            <div style="position: absolute;top:8px;right:30px">
+                                <div class="Validform_checktip"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" style="width: 120px"><span class="required">*</span>触发器名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="triggerName" datatype="*"  nullmsg="请输入触发器名称" placeholder="" autocomplete="off" maxlength="30" class="layui-input form-required" style="width: 95%">
+                            <div style="position: absolute;top:8px;right:30px">
+                                <div class="Validform_checktip"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" style="width: 120px"><span class="required">*</span>触发器组名</label>
+                        <div class="layui-input-block">
+                            <input type="text"  name="triggerGroupName" datatype="*"  nullmsg="请输入触发器组名" placeholder="" autocomplete="off" maxlength="30"  class="layui-input form-required" style="width: 95%">
+                            <div style="position: absolute;top:8px;right:30px">
+                                <div class="Validform_checktip"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" style="width: 120px"><span class="required">*</span>任务类</label>
+                        <div class="layui-input-block">
+                            <input type="text"  name="jobClass" datatype="letterOrNumber" errormsg="请输入数字或字母"  placeholder="" autocomplete="off" maxlength="30" class="layui-input form-required" style="width: 95%">
+                            <div style="position: absolute;top:8px;right:30px">
+                                <div class="Validform_checktip"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" style="width: 120px">任务描述</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="jobDescription"  placeholder="" autocomplete="off" maxlength="30" class="layui-input form-required" style="width: 95%">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" style="width: 120px"><span class="required">*</span>cron表达式</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="cronExpression" datatype="*"  nullmsg="请输入cron表达式"  placeholder="" autocomplete="off" maxlength="30" class="layui-input form-required" style="width: 95%">
+                            <div style="position: absolute;top:8px;right:30px">
+                                <div class="Validform_checktip"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" style="width: 120px">任务开始时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="startTime" name="startTime"  placeholder="" autocomplete="off" maxlength="30" class="layui-input " style="width: 95%">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" style="width: 120px">任务结束时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="endTime" name="endTime"  placeholder="" autocomplete="off" maxlength="30" class="layui-input " style="width: 95%">
+                        </div>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    var validform = null;//表单验证对象
+
+    $(window).load(function() {
+        $('.containerPen').hide();
+    });
+    $(function() {
+        //初始化表单验证
+        validform = $(".layui-form").Validform({
+            tiptype:2
+        });
+    });
+
+    layui.use(['jquery','form','laydate','upload'], function() {
+        var $ = layui.jquery,
+            upload = layui.upload,
+            form = layui.form;
+        laydate = layui.laydate;
+        laydate.render({
+            elem: '#startTime',
+            value: new Date()
+        });
+        laydate.render({
+            elem: '#endTime',
+            value: new Date()
+        });
+
+    });
+</script>
+</html>

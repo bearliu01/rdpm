@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pengniao.rdpm.system.mapper.RightMapper">
+
+    <resultMap type="TRight" id="rightResult">
+        <id property="rightId" column="rightId"/>
+        <id property="parentTrId" column="parentTrId"/>
+        <id property="rightName" column="rightName"/>
+        <id property="action" column="action"/>
+    </resultMap>
+
+    <select id="getRight" resultMap="rightResult">
+        SELECT rightId,parentTrId,rightName,action
+        FROM TRIGHT
+    </select>
+
+    <select id="getRightById"  resultType="com.pengniao.rdpm.entity.TRight" parameterType="Integer">
+        SELECT rightId,parentTrId,rightName,action
+        FROM TRIGHT
+        WHERE rightId = #{rightId,jdbcType=INTEGER}
+    </select>
+
+    <insert id="addRight" parameterType="com.pengniao.rdpm.entity.TRight">
+		INSERT INTO TRight(rightId,parentTrId,rightName,action)
+		VALUES(#{rightId},#{parentTrId},#{rightName},#{action})
+	</insert>
+
+    <select id="getLastRightId" resultType="Integer" >
+		SELECT rightId FROM TRIGHT ORDER BY rightId desc limit 0,1
+	</select>
+
+    <select id="getChildRightById" resultType="Integer" >
+		SELECT rightId,parentTrId,rightName,action FROM TRIGHT WHERE parentTrId = #{rightId}
+	</select>
+
+
+    <update id="updateRight" parameterType="com.pengniao.rdpm.entity.TRight">
+		UPDATE TRight SET rightName=#{rightName},action=#{action}
+		WHERE rightId = #{rightId}
+	</update>
+
+    <delete id="deleteRight" parameterType="Integer">
+        DELETE FROM TRight WHERE rightId=#{rightId}
+    </delete>
+
+    <select id="getRightByUserId" resultMap="rightResult">
+        SELECT TRight.rightId,rightName,parentTrId,action FROM TUser,TUserRoleRelation,TRole,TRoleRightRelation,TRight
+        WHERE TUser.userId = TUserRoleRelation.userId AND TUserRoleRelation.roleId = TRole.roleId
+        AND TRole.roleId = TRoleRightRelation.roleId AND TRoleRightRelation.rightId = TRight.rightId
+        AND TUser.userId = #{userId}
+    </select>
+
+    <select id="getRightByLoginName" resultMap="rightResult">
+        SELECT TRight.rightId,rightName,parentTrId,action FROM TUser,TUserRoleRelation,TRole,TRoleRightRelation,TRight
+        WHERE TUser.userId = TUserRoleRelation.userId AND TUserRoleRelation.roleId = TRole.roleId
+        AND TRole.roleId = TRoleRightRelation.roleId AND TRoleRightRelation.rightId = TRight.rightId
+        AND TUser.loginName = #{loginName}
+    </select>
+
+
+
+</mapper>

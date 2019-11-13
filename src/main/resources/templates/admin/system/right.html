@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>权限</title>
+    <link rel="stylesheet" type="text/css" th:href= "@{/layui/css/layui.css}"  />
+    <link rel="stylesheet" type="text/css" th:href= "@{/css/admin.css}" />
+    <link rel="stylesheet" type="text/css" th:href= "@{/jqGrid/bootstrap/css/bootstrap.min.css}">
+    <!--<link rel="stylesheet" type="text/css" th:href= "@{/jqGrid/css/ui.jqgrid-bootstrap.css}" />-->
+    <link rel="stylesheet" type="text/css" th:href= "@{/css/loading.css}" >
+    <link rel="stylesheet" type="text/css" th:href= "@{/treeGrid/css/treegrid-3.0.css}" />
+
+
+    <script type="text/javascript" th:src="@{/js/jquery-1.11.1.js}"></script>
+    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+    <!--<script type="text/javascript" th:src="@{/jqGrid/js/i18n/grid.locale-cn.js}"  ></script>-->
+    <!--<script type="text/javascript" th:src="@{/jqGrid/js/jquery.jqGrid.min.js}" ></script>-->
+    <script type="text/javascript" th:src="@{/js/div-resize.js}"></script>
+    <script type="text/javascript" th:src="@{/miniDialog/MiniDialog.js}"></script>
+    <script type="text/javascript" th:src="@{/jqGrid/bootstrap/js/bootstrap.min.js}"></script>
+    <script type="text/javascript" th:src="@{/treeGrid/js/json2.js}"></script>
+    <script type="text/javascript" th:src="@{/treeGrid/js/treegrid-3.0.js}"></script>
+
+</head>
+<body>
+<div class="containerPen">
+    <div class="loading">
+        <div class="slice">
+            <div data-loader="circle-side"></div>
+        </div>
+    </div>
+</div>
+<div class="jsplite_main_right">
+    <div class="page-content-wrap">
+        <div id="div_datagrid" style="width:100%">
+
+        </div>
+    </div>
+    <div id="cd-shadow-layer"></div>
+</div>
+</body>
+
+<script>
+    $(window).load(function() {
+        $('.containerPen').hide();
+    });
+
+    var treeGrid;//表格
+    $(document).ready(function() {
+        var config = {
+            "id_field": "rightId",
+            "columns":[
+                {"title": "权限名称", "field": "rightName", "align": "left", "width": "60"},
+                {"title": "链接", "field": "action", "align": "center", "width": "50"},
+                {"title": "操作", "width": "100", "handler": "operateHandler", "align": "center"}
+            ]
+            //"dataset":[{"fmId":0,"fmName":"功能菜单","fmUrl":"SystemMothed","fmDesc":"","fmPid":"\"null\"","fmCreateDate":"2017-05-10","children":[{"fmId":1,"fmName":"基础信息管理","fmUrl":"BaseMgr","fmDesc":"","fmPid":"0","fmCreateDate":"2017-05-10"}]}],
+        };
+        treeGrid = $("#div_datagrid").showTreeGrid(config);
+        getRight();
+    })
+
+    /** 功能描述: 获取权限
+     * @param null
+    * @return:
+    * @Author: lj
+    * @Date: 2019/10/22 14:40
+    */
+    function getRight(){
+        $.getJSON("[[@{/system/right/getRight}]]?timeid="+ Math.random(), function(json){
+            treeGrid.setDataset(json);
+            treeGrid.show();
+            treeGrid.expandAll();//展开所有节点
+        });
+    }
+
+    function operateHandler(trid, fieldValue, rowdata, colMeta){
+        var rowjson = JSON.stringify(rowdata);
+        var s = "";
+        s += "<a href='javascript:;' onclick='addRight("+rowjson+")'>新增</a>&nbsp;&nbsp;";
+        s += "<a href='javascript:;' onclick='updateRight("+rowjson+")'>编辑</a>&nbsp;&nbsp;";
+        s += "<a href='javascript:;' onclick='deleteRight("+rowjson+")'>删除</a>";
+        return s;
+    }
+
+    /** 功能描述: 新增权限
+     * @param null
+    * @return:
+    * @Author: lj
+    * @Date: 2019/10/22 11:23
+    */
+    function addRight(rowObject){
+        var addDialog = Dialog({
+            title: "新增",
+            width: 800,
+            iframeContent: {
+                id: "add-right-iframe",
+                src: "[[@{/system/right/skipPageToAddRight}]]?rightId="+rowObject.rightId+"&rightName="+rowObject.rightName,
+                height: 260
+            },
+            showButton: true,
+            ok: {
+                notClose: true,
+                callback: function () {
+                    if($("#add-right-iframe")[0].contentWindow.valid()){ //表单元素验证通过
+                        dialog_LoadingBtn();//确定按钮置为loading
+                        setTimeout(function(){
+                            var rtnVal = $("#add-right-iframe")[0].contentWindow.submitForm(); //提交表单
+                            if(rtnVal.code != "sucess" ){
+                                dialog_ResetBtn();//取消loading,重置确定按钮
+                                window.parent.danger(rtnVal.code, rtnVal.msg);//操作失败提示
+                            }else{
+                                //业务处理
+                                getRight();//重新加载表格
+                                dialog_ResetBtn();//取消loading,重置确定按钮
+                                Dialog.close( addDialog );
+                                window.parent.success(rtnVal.msg);//操作成功提示
+                            }
+                        }, 300);
+                    }
+                }
+            }
+        });
+    }
+
+    /** 功能描述: 修改权限
+     * @param null
+    * @return:
+    * @Author: lj
+    * @Date: 2019/10/22 14:59
+    */
+    function updateRight(rowObject){
+        var updateDialog = Dialog({
+            title: "修改",
+            width: 800,
+            iframeContent: {
+                id: "update-right-iframe",
+                src: "[[@{/system/right/skipPageToUpdateRight}]]?rightId="+rowObject.rightId,
+                height: 260
+            },
+            showButton: true,
+            ok: {
+                notClose: true,
+                callback: function () {
+                    if($("#update-right-iframe")[0].contentWindow.valid()){ //表单元素验证通过
+                        dialog_LoadingBtn();//确定按钮置为loading
+                        setTimeout(function(){
+                            var rtnVal = $("#update-right-iframe")[0].contentWindow.submitForm(); //提交表单
+                            if(rtnVal.code != "sucess" ){
+                                window.parent.danger(rtnVal.code, rtnVal.msg);//操作失败提示
+                            }else{
+                                //业务处理
+                                getRight();//重新加载表格
+                                Dialog.close(updateDialog);
+                                window.parent.success(rtnVal.msg);//操作成功提示
+                            }
+                        }, 300);
+                    }
+                }
+            }
+        });
+    }
+
+    /** 功能描述: 删除权限
+     * @param null
+    * @return:
+    * @Author: lj
+    * @Date: 2019/10/22 15:47
+    */
+    function deleteRight(rowObject){
+        if(rowObject.rightId == 0){
+            layer.msg("此权限不允许删除");
+            return false;
+        }
+        var delDialog = Dialog({
+            title: "询问",
+            content: "您确认要删除 【"+rowObject.rightName+"】 吗？",
+            ok: {
+                waiting: true,
+                waitingText: "删除中",
+                callback: function () {
+                    $.ajax({
+                        type: 'post',
+                        async: true,
+                        url: "[[@{/system/right/deleteRight}]]",
+                        data:{
+                            "rightId":rowObject.rightId
+                        },
+                        dataType: "json",
+                        timeout: 8000,
+                        beforeSend: function() {
+
+                        },
+                        complete: function(XMLHttpRequest, status) {
+                        },
+                        success: function(res) {
+                            if(res.code == "sucess"){
+                                getRight();//重新加载表格
+                                Dialog.close( delDialog );
+                                window.parent.success(res.msg);//操作成功提示
+                            }else{
+                                Dialog.close( delDialog );
+                                window.parent.danger(res.code,res.msg);//操作失败提示
+                            }
+                        },
+                        error: function(xhr, textStatus) {
+                            window.parent.danger(xhr.status,"error");//操作失败提示
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+</script>
+
+</html>

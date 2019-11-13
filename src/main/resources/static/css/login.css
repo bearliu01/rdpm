@@ -1,0 +1,82 @@
+*{
+	margin: 0;
+	padding: 0;
+}
+li{
+	list-style: none;
+}
+i{
+	font-style: normal;
+}
+body{
+	background-color: transparent;
+	display: flex;
+}
+.leftbigbox{
+	width: 68%;
+	min-width: 560px;
+	background-color: transparent;
+	background-image: url(../images/dlloginbg.jpg);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+}
+.logoimg{
+	padding: 20px 30px;
+	height: 36px;
+}
+.logoimg img{
+	height: 100%;
+}
+.rightbigbox{
+	width: 32%;
+	min-width: 360px;
+}
+.title{
+	font-size: 24px;
+	color: #333333;
+	font-weight: bold;
+	text-align: center;
+	letter-spacing: 2px;
+	margin: 100px 0;
+}
+.inputbox li{
+	display: flex;
+	align-items: center;
+	width: 300px;
+	margin: 0 auto 30px;
+	border-bottom: 1px solid #aaa;
+	padding:0 4px 10px;
+}
+.inputbox li .iconfont{
+	color: #333;
+	display: inline-block;
+	margin-right: 6px;
+}
+.inputbox input{
+	border: none;
+	outline: none;
+}
+.inputbox li span{
+	color: #302f5b;
+	display: inline-block;
+	font-size: 14px;
+	border-left: 1px solid #302f5b;
+	padding-left: 10px;
+}
+.loginenter{
+	width: 310px;
+	margin: 40px auto 0;
+}
+.loginenter input{
+	width: 310px;
+	height: 50px;
+	font-size: 16px;
+	line-height: 50px;
+	border-radius: 25px;
+	outline: none;
+	background-color: #302f5b;
+	color: #fff;
+	border: 1px solid #302f5b;
+	
+}

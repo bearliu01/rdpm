@@ -1,0 +1,32 @@
+<!DOCTYPE html >
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title>500</title>
+	</head>
+	<style type="text/css">
+		*{margin: 0;padding: 0;}
+		html{background-image: url("images/error-bg.png");background-repeat: no-repeat;
+			background-size: cover;}
+		.contentbox{display: flex;align-items: flex-end;position: absolute;left: 50%;
+			top: 50%;margin-left: -320px;margin-top: -85px;}
+		.imgbox{width: 270px;}
+		.imgbox img{width: 100%;}
+		.errorreason{margin-left: 30px;}
+		.errorreason h2{color: #958462;}
+		.errorreason p{margin: 20px 0 4px;width: 400px;}
+	</style>
+	<body>
+		<div class="contentbox">
+			<div class="imgbox">
+				<img th:src="@{/images/500img.png}"/>
+			</div>
+			<div class="errorreason">
+				<h2>[[${error}]]</h2>
+				<p>[[${message}]]
+					[[${timestamp}]]
+				</p>
+			</div>
+		</div>
+	</body>
+</html>

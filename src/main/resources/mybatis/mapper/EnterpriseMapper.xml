@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pengniao.rdpm.system.mapper.EnterpriseMapper">
+
+    <resultMap type="Enterprise" id="enterpriseResult">
+        <id property="enterpriseId" column="enterpriseId"/>
+        <id property="enterpriseName" column="enterpriseName"/>
+        <id property="enterpriseAddr" column="enterpriseAddr"/>
+        <id property="enterpriseLinkMen" column="enterpriseLinkMen"/>
+        <id property="enterpriseTel" column="enterpriseTel"/>
+        <id property="enterpriseRegDate" column="enterpriseRegDate"/>
+        <id property="enterpriseEndDate" column="enterpriseEndDate"/>
+        <id property="enterpriseIsUse" column="enterpriseIsUse"/>
+        <id property="createDate" column="createDate"/>
+        <id property="enterpriseEnglishName" column="enterpriseEnglishName"/>
+        <id property="enterpriseLogo" column="enterpriseLogo"/>
+    </resultMap>
+
+    <select id="getEnterprise" resultMap="enterpriseResult">
+        SELECT enterpriseId,enterpriseName,enterpriseAddr,enterpriseLinkMen,enterpriseTel,enterpriseRegDate,enterpriseEndDate,enterpriseIsUse,createDate,enterpriseEnglishName,enterpriseLogo
+        FROM Enterprise
+        ORDER BY createDate DESC LIMIT
+        #{startRow,jdbcType=INTEGER},#{limit,jdbcType=INTEGER}
+    </select>
+
+    <select id="getEnterpriseForAll" resultMap="enterpriseResult">
+        SELECT enterpriseId,enterpriseName,enterpriseAddr,enterpriseLinkMen,enterpriseTel,enterpriseRegDate,enterpriseEndDate,enterpriseIsUse,createDate,enterpriseEnglishName,enterpriseLogo
+        FROM Enterprise WHERE enterpriseIsUse = 0
+        ORDER BY createDate DESC
+    </select>
+
+    <select id="queryEnterpriseCount"  resultType="java.lang.Integer">
+        SELECT COUNT(enterpriseId) FROM Enterprise
+    </select>
+
+    <insert id="addEnterprise" parameterType="com.pengniao.rdpm.entity.Enterprise">
+		INSERT INTO Enterprise(enterpriseId,enterpriseName,enterpriseAddr,enterpriseLinkMen,enterpriseTel,enterpriseRegDate,enterpriseEndDate,enterpriseIsUse,createDate,enterpriseEnglishName,enterpriseLogo)
+		VALUES(#{enterpriseId},#{enterpriseName},#{enterpriseAddr},#{enterpriseLinkMen},#{enterpriseTel},#{enterpriseRegDate},#{enterpriseEndDate},#{enterpriseIsUse},#{createDate},#{enterpriseEnglishName},#{enterpriseLogo})
+	</insert>
+
+    <select id="getEnterpriseById" resultMap="enterpriseResult">
+        SELECT enterpriseId,enterpriseName,enterpriseAddr,enterpriseLinkMen,enterpriseTel,enterpriseRegDate,enterpriseEndDate,enterpriseIsUse,createDate,enterpriseEnglishName,enterpriseLogo
+        FROM Enterprise
+        WHERE enterpriseId = #{enterpriseId}
+    </select>
+
+    <update id="updateEnterprise" parameterType="com.pengniao.rdpm.entity.Enterprise">
+		UPDATE Enterprise SET enterpriseId=#{enterpriseId},enterpriseName=#{enterpriseName},enterpriseAddr=#{enterpriseAddr},enterpriseLinkMen=#{enterpriseLinkMen},enterpriseTel=#{enterpriseTel}
+		,enterpriseRegDate=#{enterpriseRegDate},enterpriseEndDate=#{enterpriseEndDate},enterpriseEnglishName=#{enterpriseEnglishName},enterpriseLogo=#{enterpriseLogo}
+		WHERE enterpriseId = #{enterpriseId}
+	</update>
+
+    <update id="updateEnterpriseBase" parameterType="com.pengniao.rdpm.entity.Enterprise">
+		UPDATE Enterprise SET enterpriseAddr=#{enterpriseAddr},enterpriseLinkMen=#{enterpriseLinkMen},enterpriseTel=#{enterpriseTel}
+		,enterpriseLogo=#{enterpriseLogo}
+		WHERE enterpriseId = #{enterpriseId}
+	</update>
+
+
+    <delete id="deleteEnterprise" parameterType="String">
+        DELETE FROM Enterprise WHERE enterpriseId=#{enterpriseId}
+    </delete>
+
+    <update id="updateIsUse" >
+		UPDATE Enterprise SET enterpriseIsUse=#{enterpriseIsUse}
+		WHERE enterpriseId = #{enterpriseId}
+	</update>
+
+
+</mapper>

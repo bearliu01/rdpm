@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户 - 修改用户基本信息</title>
+
+    <link rel="stylesheet" type="text/css"  th:href= "@{/css/admin.css}" />
+    <link rel="stylesheet" type="text/css"  th:href= "@{/jqGrid/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css"  th:href= "@{/css/loading.css}">
+    <link rel="stylesheet" type="text/css"  th:href= "@{/layui/css/layui.css}" />
+    <link rel="stylesheet" type="text/css" th:href= "@{/validform/validform.css}" />
+
+
+    <script type="text/javascript" th:src="@{/js/jquery-1.11.1.js}" ></script>
+    <script type="text/javascript" th:src="@{/layui/layui.js}" ></script>
+    <script type="text/javascript" th:src="@{/js/request-param.js}"></script>
+    <script type="text/javascript" th:src="@{/validform/validform_v5.3.2.js}"></script>
+
+</head>
+<body>
+<div class="containerPen">
+    <div class="loading">
+        <div class="slice">
+            <div data-loader="circle-side"></div>
+        </div>
+    </div>
+</div>
+<div class="layui-fluid larry-wrapper form-margin" >
+    <div class="layui-row layui-col-space30">
+        <div class="layui-col-xs24">
+            <section class="panel panel-padding">
+                <form id="form_user" class="layui-form cus-form" action="" >
+                    <div class="alert alert-danger" role="alert" style="margin-left:20px">提示：登录账号请使用手机号码注册，否则有可能出现账号已被注册的情况！</div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">登录账号</label>
+                        <div class="layui-input-block" style="position: relative;">
+                            <input type="text" name="loginName"  datatype="*" nullmsg="请输入登录账号" th:value="${user.loginName}"    placeholder="" autocomplete="off" maxlength="30" class="layui-input">
+                            <div style="position: absolute;top:5px;right:6px">
+                                <div class="Validform_checktip"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">用户姓名</label>
+                        <div class="layui-input-block" style="position: relative;">
+                            <input type="text" name="userName" th:value="${user.userName}"    placeholder="" autocomplete="off" maxlength="15" class="layui-input">
+
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">手机号</label>
+                        <div class="layui-input-block" style="position: relative;">
+                            <input type="text" name="mobile" th:value="${user.mobile}"  placeholder="" autocomplete="off" maxlength="30" class="layui-input form-required">
+
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">电子邮箱</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="email" th:value="${user.email}"  placeholder="" autocomplete="off" maxlength="30" class="layui-input ">
+                        </div>
+                    </div>
+                    <input type="hidden" name="userId" th:value="${user.userId}">
+                </form>
+            </section>
+        </div>
+    </div>
+</div>
+</body>
+
+<script th:inline="javascript">
+    var validform = null; //表单验证对象
+
+    $(window).load(function() {
+        $('.containerPen').hide();
+    });
+    $(function() {
+        //初始化表单验证
+        validform = $(".layui-form").Validform({
+            tiptype:2
+        });
+
+    });
+
+    layui.use(['jquery','form','laydate'], function() {
+        var $ = layui.jquery,
+            form = layui.form;
+    });
+
+    /**
+     ** 表单元素验证
+     **/
+    function valid(){
+        //是给予提示
+        if(validform.check(false)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     ** 提交表单
+     **/
+    function submitForm(){
+        var rtnVal = null;
+        var userId = $("#form_user input[name=userId]").val();// 用户ID
+        var loginName = $("#form_user input[name=loginName]").val();// 登录账号
+        var userName = $("#form_user input[name=userName]").val();// 用户姓名
+        var mobile = $("#form_user input[name=mobile]").val();// 手机号
+        var email = $("#form_user input[name=email]").val();// 电子邮箱
+        $.ajax({
+            type: 'post',
+            async: false,
+            // url: "[[@{/system/administrator/updateAdministrator}]]",system/user/updateUser
+            url:  [[@{/system/user/updateUserBase}]],
+            data:{
+                "userId":userId,
+                "loginName":loginName,
+                "userName":userName,
+                "mobile":mobile,
+                "email":email
+            },
+            dataType: "json",
+            timeout: 8000,
+            beforeSend: function() {
+            },
+            complete: function(XMLHttpRequest, status) {
+            },
+            success: function(res) {
+                rtnVal = res;
+            },
+            error: function(xhr, textStatus) {
+                rtnVal = JSON.parse('{"code":'+xhr.status+', "msg":"服务器错误"}');
+            }
+        });
+        return rtnVal;
+    };
+</script>
+
+</html>

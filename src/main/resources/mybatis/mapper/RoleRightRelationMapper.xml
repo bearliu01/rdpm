@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pengniao.rdpm.system.mapper.RoleRightRelationMapper">
+
+    <resultMap type="TRoleRightRelation" id="roleRightRelationResult">
+        <id property="trrId" column="trrId"/>
+        <id property="roleId" column="roleId"/>
+        <id property="rightId" column="rightId"/>
+    </resultMap>
+
+    <select id="getRoleRightByRoleId" resultMap="roleRightRelationResult">
+		SELECT trrId,roleId,rightId FROM TRoleRightRelation WHERE roleId=#{roleId}
+	</select>
+
+    <delete id="deleteRoleRightByRoleId" parameterType="String">
+	   	DELETE FROM TRoleRightRelation WHERE roleId=#{roleId}
+	</delete>
+
+
+    <insert id="insertRolesRightBatch" parameterType="java.util.List">
+		INSERT INTO TRoleRightRelation(trrId,roleId,rightId)  VALUES
+        <foreach collection="list" item="item" index="index" separator="," >
+         (#{item.trrId},#{item.roleId},#{item.rightId})
+        </foreach>
+    </insert>
+
+    <!--<insert id="addUserRoleRelation" parameterType="com.pengniao.rdpm.entity.TUserRoleRelation">-->
+		<!--INSERT INTO TUserRoleRelation(turId,userId,roleId)-->
+		<!--VALUES(#{turId},#{userId},#{roleId})-->
+	<!--</insert>-->
+
+
+
+    <!--<select id="getUserRoleRelationByUserId" resultMap="userRoleRelationResult">-->
+        <!--SELECT turId,userId,roleId-->
+        <!--FROM TUserRoleRelation-->
+        <!--WHERE userId = #{userId}-->
+    <!--</select>-->
+
+    <!--<insert id="batchDeleteRoleById" parameterType="java.util.List">-->
+        <!--DELETE FROM  TRole-->
+        <!--WHERE roleId =-->
+        <!--<foreach collection="list" item="item" index="index" separator="," >-->
+            <!--#{item.roleId}-->
+        <!--</foreach>-->
+    <!--</insert>-->
+
+</mapper>

@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>DEMO</title>
+    <link rel="stylesheet" type="text/css" th:href= "@{/layui/css/layui.css}"  />
+    <link rel="stylesheet" type="text/css" th:href= "@{/css/admin.css}" />
+    <link rel="stylesheet" type="text/css" th:href= "@{/jqGrid/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href= "@{/jqGrid/css/ui.jqgrid-bootstrap.css}" />
+    <!-- <link rel="stylesheet" type="text/css" href="../../static/admin/dialog/css/dialog.css"> -->
+    <link rel="stylesheet" type="text/css"  th:href= "@{/css/loading.css}" >
+    <link rel="stylesheet" type="text/css"  th:href= "@{/sideslip/css/sideslip.css}" >
+    <link rel="stylesheet" type="text/css"  th:href= "@{/jsplite/jsplite.css}" />
+    <link rel="stylesheet" type="text/css"  th:href= "@{/bztree/css/bootstrapStyle/bootstrapStyle.css}"  />
+
+    <script type="text/javascript" th:src="@{/js/jquery-1.11.1.js}"></script>
+    <script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+    <script type="text/javascript" th:src="@{/jqGrid/js/i18n/grid.locale-cn.js}"  ></script>
+    <script type="text/javascript" th:src="@{/jqGrid/js/jquery.jqGrid.min.js}" ></script>
+    <script type="text/javascript" th:src="@{/sideslip/js/sideslip.js}"></script>
+    <script type="text/javascript" th:src="@{/jsplite/jsplite.js}"></script>
+    <script type="text/javascript" th:src="@{/js/div-resize.js}"></script>
+    <script type="text/javascript" th:src="@{/miniDialog/MiniDialog.js}"></script>
+    <script type="text/javascript" th:src="@{/jqGrid/bootstrap/js/bootstrap.min.js}"></script>
+
+
+    <script type="text/javascript" th:src="@{/bztree/js/jquery.ztree.core.js}" ></script>
+    <script type="text/javascript" th:src="@{/bztree/js/jquery.ztree.excheck.js}" ></script>
+    <script type="text/javascript" th:src="@{/bztree/js/jquery.ztree.exedit.js}"></script>
+</head>
+
+<body>
+<div class="containerPen">
+    <div class="loading">
+        <div class="slice">
+            <div data-loader="circle-side"></div>
+        </div>
+    </div>
+</div>
+<div class="jsplite_main">
+    <div class="jsplite_main_left" id="frmTitle" name="fmTitle" style="width: 320px">
+        <ul id="treeDemo" class="ztree"></ul>
+    </div>
+
+    <div class="picBox" onclick="switchSysBar()" id="switchPoint"></div>
+    <div class="jsplite_main_right">
+        <div class="page-content-wrap">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div style="float: left;">
+                        <div class="layui-inline tool-btn">
+                            <div class="btn-group" role="group" aria-label="...">
+                                <button id="addDemo" type="button" class="btn btn-default"><i class="layui-icon">&#xe654;</i><span class="cus-buttongroup-fontsize">新增</span></button>
+                                <button id="updateDemo" type="button" class="btn btn-default"><i class="layui-icon">&#xe642;</i><span class="cus-buttongroup-fontsize">修改</span></button>
+                                <button id="delDemo" type="button" class="btn btn-default"><i class="layui-icon">&#xe640;</i><span class="cus-buttongroup-fontsize">删除</span></button>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="cus-button-fontsize">操作</span> <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="javascript:;">操作1</a></li>
+                                <li><a href="javascript:;">操作2</a></li>
+                                <li><a href="javascript:;">操作3</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="javascript:;">操作4</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div style="float: right;">
+
+                        <div class="layui-inline">
+                            <div id="cd-trigger">
+                                <a href="#cd-cart" class="layui-btn layui-btn-primary layui-btn-noborder"><i class="layui-icon">&#xe615;</i>高级搜索</a>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </form>
+            <div class="layui-form" id="table-list">
+                <table id="jqGrid"></table>
+                <div id="jqGridPager"></div>
+            </div>
+        </div>
+        <div id="cd-shadow-layer"></div>
+
+        <div id="cd-cart">
+            <div class="head">
+                <div class="button">
+                    <button class="layui-btn layui-btn-normal" lay-submit="search">搜索</button>
+                    <button class="layui-btn layui-btn-normal" lay-submit="search">重置</button>
+                </div>
+
+            </div>
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+
+                        <div class="layui-input-inline">
+                            <input type="tel" name="phone" lay-verify="required|phone" autocomplete="off" class="layui-input" placeholder="请输入标题">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+
+                        <div class="layui-input-inline">
+                            <input type="text" name="email" lay-verify="email" autocomplete="off" class="layui-input" placeholder="请输入标题">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+
+                        <div class="layui-input-inline">
+                            <input type="tel" name="phone" lay-verify="required|phone" autocomplete="off" class="layui-input" placeholder="请输入标题">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+
+                        <div class="layui-input-inline">
+                            <input type="text" name="email" lay-verify="email" autocomplete="off" class="layui-input" placeholder="请输入标题">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+
+    $(window).load(function() {
+        $('.containerPen').hide();
+    });
+
+    //监听div大小变化事件，自适应屏幕宽度
+    $(".jsplite_main_right").resize(function() {
+        $("#jqGrid").setGridWidth($(".jsplite_main_right").width() - 30);
+        $("#jqGrid").setGridHeight($(window).height() - 180);
+    });
+
+    $(document).ready(function() {
+        $.fn.zTree.init($("#treeDemo"), setting, zNodes); //初始化tree
+
+        //初始化表格
+       $("#jqGrid").jqGrid({
+            url: 'getDemo',
+            mtype: "POST",
+            styleUI: 'Bootstrap',
+            datatype: "json",
+            colModel: [{
+                label: 'id',
+                name: 'id',
+                key: true,
+                width: 75,
+                hidden:true
+            },
+                {
+                    label: '姓名',
+                    name: 'name',
+                    width: 150
+                },
+                {
+                    label: '年龄',
+                    name: 'age',
+                    width: 150
+                },
+                {
+                    label: '创建时间',
+                    name: 'createTime',
+                    width: 150
+                },
+                {
+                    label: '操作',
+                    name: 'state',
+                    index: 'state',
+                    width: 70,
+                    formatter: operatorFormat
+                },
+            ],
+           altRows: true,//隔行换色
+            viewrecords: true,
+            shrinkToFit: true, //宽度自适应
+            height: $(window).height() - 180,
+            width: $(window).width() * 0.98 - 320,
+            rowNum: 20,
+            pager: "#jqGridPager",
+            pagerpos: 'left',
+            recordpos: 'right'
+        });
+    });
+
+
+    layui.use(['jquery', 'layer'], function() {
+        var $ = layui.jquery,
+            layer = layui.layer;
+
+    });
+
+
+    var setting = {
+        view: {
+            addHoverDom: addHoverDom,
+            removeHoverDom: removeHoverDom,
+            selectedMulti: false
+        },
+        check: {
+            enable: true
+        },
+        data: {
+            simpleData: {
+                enable: true
+            }
+        },
+        edit: {
+            enable: true
+        }
+    };
+
+    var zNodes = [{
+        id: 1,
+        pId: 0,
+        name: "[core] 基本功能 演示",
+        open: true
+    },
+        {
+            id: 101,
+            pId: 1,
+            name: "最简单的树 --  标准 JSON"
+        },
+        {
+            id: 102,
+            pId: 1,
+            name: "最简单的树 --  简单 JSON"
+        },
+        {
+            id: 103,
+            pId: 1,
+            name: "不显示 连接线"
+        },
+        {
+            id: 104,
+            pId: 1,
+            name: "不显示 节点 图标"
+        },
+        {
+            id: 108,
+            pId: 1,
+            name: "异步加载 节点数据"
+        },
+        {
+            id: 109,
+            pId: 1,
+            name: "用 zTree 方法 异步加载"
+        },
+        {
+            id: 110,
+            pId: 1,
+            name: "用 zTree 方法 更新 节点数据"
+        },
+        {
+            id: 111,
+            pId: 1,
+            name: "单击 节点 控制"
+        },
+        {
+            id: 112,
+            pId: 1,
+            name: "展开 / 折叠 父节点 控制"
+        },
+        {
+            id: 113,
+            pId: 1,
+            name: "根据 参数 查找 节点"
+        },
+        {
+            id: 114,
+            pId: 1,
+            name: "其他 鼠标 事件监听"
+        },
+
+        {
+            id: 2,
+            pId: 0,
+            name: "[excheck] 复/单选框功能 演示",
+            open: false
+        },
+        {
+            id: 201,
+            pId: 2,
+            name: "Checkbox 勾选操作"
+        },
+        {
+            id: 206,
+            pId: 2,
+            name: "Checkbox nocheck 演示"
+        },
+        {
+            id: 207,
+            pId: 2,
+            name: "Checkbox chkDisabled 演示"
+        },
+        {
+            id: 208,
+            pId: 2,
+            name: "Checkbox halfCheck 演示"
+        },
+        {
+            id: 202,
+            pId: 2,
+            name: "Checkbox 勾选统计"
+        },
+        {
+            id: 203,
+            pId: 2,
+            name: "用 zTree 方法 勾选 Checkbox"
+        },
+        {
+            id: 204,
+            pId: 2,
+            name: "Radio 勾选操作"
+        },
+        {
+            id: 209,
+            pId: 2,
+            name: "Radio nocheck 演示"
+        },
+        {
+            id: 210,
+            pId: 2,
+            name: "Radio chkDisabled 演示"
+        },
+        {
+            id: 211,
+            pId: 2,
+            name: "Radio halfCheck 演示"
+        },
+        {
+            id: 205,
+            pId: 2,
+            name: "用 zTree 方法 勾选 Radio"
+        },
+
+        {
+            id: 3,
+            pId: 0,
+            name: "[exedit] 编辑功能 演示",
+            open: false
+        },
+        {
+            id: 301,
+            pId: 3,
+            name: "拖拽 节点 基本控制"
+        },
+        {
+            id: 302,
+            pId: 3,
+            name: "拖拽 节点 高级控制"
+        },
+        {
+            id: 303,
+            pId: 3,
+            name: "用 zTree 方法 移动 / 复制 节点"
+        },
+        {
+            id: 304,
+            pId: 3,
+            name: "基本 增 / 删 / 改 节点"
+        },
+        {
+            id: 305,
+            pId: 3,
+            name: "高级 增 / 删 / 改 节点"
+        },
+        {
+            id: 306,
+            pId: 3,
+            name: "用 zTree 方法 增 / 删 / 改 节点"
+        },
+        {
+            id: 307,
+            pId: 3,
+            name: "异步加载 & 编辑功能 共存"
+        },
+        {
+            id: 308,
+            pId: 3,
+            name: "多棵树之间 的 数据交互"
+        },
+
+        {
+            id: 4,
+            pId: 0,
+            name: "大数据量 演示",
+            open: false
+        },
+        {
+            id: 401,
+            pId: 4,
+            name: "一次性加载大数据量"
+        },
+        {
+            id: 402,
+            pId: 4,
+            name: "分批异步加载大数据量"
+        },
+        {
+            id: 403,
+            pId: 4,
+            name: "分批异步加载大数据量"
+        },
+
+        {
+            id: 5,
+            pId: 0,
+            name: "组合功能 演示",
+            open: false
+        },
+        {
+            id: 501,
+            pId: 5,
+            name: "冻结根节点"
+        },
+        {
+            id: 502,
+            pId: 5,
+            name: "单击展开/折叠节点"
+        },
+        {
+            id: 503,
+            pId: 5,
+            name: "保持展开单一路径"
+        },
+        {
+            id: 504,
+            pId: 5,
+            name: "添加 自定义控件"
+        },
+        {
+            id: 505,
+            pId: 5,
+            name: "checkbox / radio 共存"
+        },
+        {
+            id: 506,
+            pId: 5,
+            name: "左侧菜单"
+        },
+        {
+            id: 507,
+            pId: 5,
+            name: "下拉菜单"
+        },
+        {
+            id: 509,
+            pId: 5,
+            name: "带 checkbox 的多选下拉菜单"
+        },
+        {
+            id: 510,
+            pId: 5,
+            name: "带 radio 的单选下拉菜单"
+        },
+        {
+            id: 508,
+            pId: 5,
+            name: "右键菜单 的 实现"
+        },
+        {
+            id: 511,
+            pId: 5,
+            name: "与其他 DOM 拖拽互动"
+        },
+        {
+            id: 512,
+            pId: 5,
+            name: "异步加载模式下全部展开"
+        },
+
+        {
+            id: 6,
+            pId: 0,
+            name: "其他扩展功能 演示",
+            open: false
+        },
+        {
+            id: 601,
+            pId: 6,
+            name: "隐藏普通节点"
+        },
+        {
+            id: 602,
+            pId: 6,
+            name: "配合 checkbox 的隐藏"
+        },
+        {
+            id: 603,
+            pId: 6,
+            name: "配合 radio 的隐藏"
+        }
+    ];
+
+    var newCount = 1;
+
+    function addHoverDom(treeId, treeNode) {
+        var sObj = $("#" + treeNode.tId + "_span");
+        if (treeNode.editNameFlag || $("#addBtn_" + treeNode.tId).length > 0) return;
+        var addStr = "<span class='button add' id='addBtn_" + treeNode.tId +
+            "' title='add node' onfocus='this.blur();'></span>";
+        sObj.after(addStr);
+        var btn = $("#addBtn_" + treeNode.tId);
+        if (btn) btn.bind("click", function() {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+            zTree.addNodes(treeNode, {
+                id: (100 + newCount),
+                pId: treeNode.id,
+                name: "new node" + (newCount++)
+            });
+            return false;
+        });
+    };
+
+    function removeHoverDom(treeId, treeNode) {
+        $("#addBtn_" + treeNode.tId).unbind().remove();
+    };
+
+
+
+    function operatorFormat(cellValue, grid, rows, state) {
+        var html = '<a href="javascript:;" onclick="deleteDemo(\'' + rows.OrderID + '\',\'' + rows.CustomerID + '\')">删除</a>';
+        return html;
+    }
+
+    function deleteDemo(OrderID, CustomerID) {
+        Dialog({
+            title: "询问",
+            content: "您确认要删除吗？",
+            ok: {
+                waiting: true,
+                waitingText: "删除中",
+                callback: function () {
+                    $.ajax({
+                        type: 'post',
+                        async: true,
+                        url: "http://www.baidu.com",
+                        dataType: "json",
+                        timeout: 8000,
+                        beforeSend: function() {
+
+                        },
+                        complete: function(XMLHttpRequest, status) {
+                            Dialog.close();
+                            //window.parent.danger(status);//操作失败提示
+                        },
+                        success: function(res) {
+
+                        },
+                        error: function(xhr, type) {
+                            window.parent.danger("500","error");//操作失败提示
+                        }
+                    });
+                }
+            }
+        });
+    }
+    /**
+     新增Demo
+     **/
+    $('#addDemo').click(function() {
+        var addDialog = Dialog({
+            title: "新增",
+            width: 880,
+            iframeContent: {
+                id: "add-demo",
+                src: "skipPageToAddDemo",
+                height: 600
+            },
+            showButton: true,
+            ok: {
+                notClose: true,
+                callback: function () {
+                    if($("#add-demo")[0].contentWindow.valid()){ //表单元素验证通过
+                        dialog_LoadingBtn();//确定按钮置为loading
+                        setTimeout(function(){
+                            var rtnVal = $("#add-demo")[0].contentWindow.submitForm(); //提交表单
+                            if(rtnVal.code != "sucess" ){
+                                dialog_ResetBtn();//取消loading,重置确定按钮
+                                window.parent.danger(rtnVal.msg);//操作失败提示
+                            }else{
+                                //业务处理
+                                reloadGrid();//重新加载表格
+                                dialog_ResetBtn();//取消loading,重置确定按钮
+                                Dialog.close( addDialog );
+                                window.parent.success(rtnVal.msg);//操作成功提示
+                            }
+                        }, 500);
+                    }
+                }
+            }
+        });
+    })
+
+    /**
+     修改Demo
+     **/
+    $('#updateDemo').click(function() {
+
+    });
+
+    /**
+     删除Demo
+     **/
+    $('#delDemo').click(function() {
+
+        var rowid=$("#jqGrid").jqGrid("getGridParam","selrow");
+
+        if(rowid == null){
+            layer.msg('请选择要删除的数据');
+        }else{
+            var rowData=jQuery("#jqGrid").jqGrid("getRowData",rowid);
+
+            Dialog({
+                title: "询问",
+                content: "您确认要删除 【"+rowData.CustomerID+"】 吗？",
+                ok: {
+                    waiting: true,
+                    waitingText: "删除中",
+                    callback: function () {
+                        $.ajax({
+                            type: 'post',
+                            async: true,
+                            url: "http://www.baidu.com",
+                            dataType: "json",
+                            timeout: 8000,
+                            beforeSend: function() {
+
+                            },
+                            complete: function(XMLHttpRequest, status) {
+                                Dialog.close();
+                                //window.parent.danger(status);//操作失败提示
+                            },
+                            success: function(res) {
+
+                            },
+                            error: function(xhr, type) {
+                                window.parent.danger("500","error");//操作失败提示
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+    });
+
+    /*
+    重新加载表格
+     */
+    function reloadGrid(){
+        $("#jqGrid").jqGrid("setGridParam", {
+            postData: {},
+            page : 1
+        }).trigger("reloadGrid");
+    }
+</script>
+
+</html>

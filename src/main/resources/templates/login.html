@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<META HTTP-EQUIV="expires" CONTENT="Wed, 14 Nov 1981 00:00:00 GMT">
+	<head>
+		<meta charset="UTF-8">
+		<title>电力运维云平台</title>
+		<link rel="stylesheet" type="text/css"  th:href= "@{/css/login.css}">
+		<link rel="stylesheet" type="text/css" th:href= "@{/css/iconfont.css}"/>
+		<link rel="stylesheet" type="text/css"  th:href= "@{/toastr/toastr.css}" />
+
+		<script type="text/javascript" th:src="@{/js/jquery-1.11.1.js}" ></script>
+		<script type="text/javascript" th:src="@{/js/message.js}"></script>
+		<script type="text/javascript" th:src="@{/toastr/toastr.min.js}" ></script>
+	</head>
+	<body>
+		<div id="container" class="leftbigbox">
+			<div class="logoimg">
+				<img th:src="@{/images/dllogo.png}"/>
+			</div>
+		</div>
+		<div class="rightbigbox">
+			<!--<form th:action="@{/login}" method="post">-->
+			<form id="login_form">
+			<div class="login">
+				<p class="title">欢迎登录</p>
+
+				<div class="inputbox">
+					<ul>
+						<li>
+							<i class="iconfont icon-yonghuming"></i>
+							<input type="text" name="username" th:value="hnjz8066" placeholder="请输入用户名" />
+						</li>
+						<li>
+							<i class="iconfont icon-mima"></i>
+							<input type="password" name="password" th:value="111111" placeholder="请输入密码" />
+						</li>
+						<li>
+							<i class="iconfont icon-yanzhengma"></i>
+							<input type="text" name="captchaCode" placeholder="请输入验证码"/>
+							<span><img id="captchaCode" alt="验证码" th:onclick="refresh(this)" th:src="@{/login/getKaptchaImage}" /></span>
+						</li>
+					</ul>
+				</div>
+				<div class="loginenter">
+					<input id="btn_login" type="button" value="登录" onclick="login()" style="cursor:pointer " />
+				</div>
+			</div>
+			</form>
+		</div>
+		<script type="text/javascript">
+            $(function(){
+                //改变div的高度
+                $("#container").height($(window).height());
+            });
+
+            /** 功能描述: 刷新验证码
+             * @param null
+            * @return:
+            * @Author: lj
+            * @Date: 2019/10/17 9:55
+            */
+			function refresh(obj) {
+				obj.src = "login/getKaptchaImage?t=" + new Date().getMilliseconds();
+			}
+
+            function login(){
+				var username = $("#login_form input[name=username]").val();//用户名
+				var password = $("#login_form input[name=password]").val();//密码
+				var captchaCode = $("#login_form input[name=captchaCode]").val();//验证码
+				$.ajax({
+					type: 'post',
+					async: true,
+					url: "login",
+					data:{
+						"username": username,
+						"password": password,
+						"captchaCode": captchaCode
+					},
+					dataType: "json",
+					timeout: 8000,
+					beforeSend: function() {
+						$("#btn_login").attr('disabled',true);//按钮不可用
+						$("#btn_login").val("正在登录");
+					},
+					complete: function(XMLHttpRequest, status) {
+						$("#btn_login").attr('disabled',false);//按钮可用
+						$("#captchaCode").attr("src","login/getKaptchaImage?t=" + new Date().getMilliseconds());//验证错误后，重新生成验证码
+					},
+					success: function(res) {
+						if(res.code == "success" && res.msg != "success"){
+							toastr.options.positionClass = 'toast-top-center';
+							toastr.options.timeOut = "1000";
+							toastr.error("",res.msg);
+							$("#btn_login").val("登录");
+						}else if(res.code == "captchaCode-error"){
+							toastr.options.positionClass = 'toast-top-center';
+							toastr.options.timeOut = "1000";
+							toastr.error("",res.msg);
+							$("#btn_login").val("登录");
+						}
+						else{
+							$("#btn_login").val("登录成功");
+							window.location.href="skipPageToMain";
+						}
+
+					},
+					error: function(xhr, type) {
+						$("#btn_login").val("登录");
+						console .info("服务器错误");
+					}
+				});
+			}
+
+			//防止页面后退
+			history.pushState(null, null, document.URL);
+			window.addEventListener('popstate', function (){
+				history.pushState(null, null, document.URL);
+			});
+
+        </script>
+	</body>
+</html>

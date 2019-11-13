@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>更新角色</title>
+
+    <link rel="stylesheet" type="text/css"  th:href= "@{/css/admin.css}" />
+    <link rel="stylesheet" type="text/css"  th:href= "@{/jqGrid/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css"  th:href= "@{/css/loading.css}">
+    <link rel="stylesheet" type="text/css"  th:href= "@{/layui/css/layui.css}" />
+    <link rel="stylesheet" type="text/css" th:href= "@{/validform/validform.css}" />
+
+
+    <script type="text/javascript" th:src="@{/js/jquery-1.11.1.js}" ></script>
+    <script type="text/javascript" th:src="@{/layui/layui.js}" ></script>
+    <script type="text/javascript" th:src="@{/js/request-param.js}"></script>
+    <script type="text/javascript" th:src="@{/validform/validform_v5.3.2.js}"></script>
+
+</head>
+<body>
+<div class="containerPen">
+    <div class="loading">
+        <div class="slice">
+            <div data-loader="circle-side"></div>
+        </div>
+    </div>
+</div>
+<div class="layui-fluid larry-wrapper form-margin" >
+    <div class="layui-row layui-col-space30">
+        <div class="layui-col-xs24">
+            <section class="panel panel-padding">
+                <form id="form_role" class="layui-form cus-form" action="" >
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"><span class="required">*</span>角色名称</label>
+                        <div class="layui-input-block" style="position: relative;">
+                            <input type="text" name="roleName" th:value="${role.roleName}"  datatype="*" nullmsg="请输入角色名称" placeholder="" autocomplete="off" maxlength="30" class="layui-input form-required">
+                            <div style="position: absolute;top:5px;right:6px">
+                                <div class="Validform_checktip"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">描述</label>
+                        <div class="layui-input-block" style="position: relative;">
+                            <input type="text" name="description" th:value="${role.description}"  placeholder="" autocomplete="off" maxlength="80" class="layui-input">
+                        </div>
+                    </div>
+                    <input type="hidden" name="roleId" th:value="${role.roleId}">
+                </form>
+            </section>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+
+    var validform = null;//表单验证对象
+
+    $(window).load(function() {
+        $('.containerPen').hide();
+    });
+    $(function() {
+        //初始化表单验证
+        validform = $(".layui-form").Validform({
+            tiptype:2
+        });
+    });
+
+    layui.use(['jquery','form','laydate'], function() {
+        var $ = layui.jquery,
+            form = layui.form;
+    });
+
+    /** 功能描述: 表单元素验证
+     * @param null
+    * @return: 表单元素验证
+    * @Author: lj
+    * @Date: 2019/10/25 16:18
+    */
+    function valid(){
+        //是给予提示
+        if(validform.check(false)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+   /** 功能描述: 提交表单
+    * @param null
+   * @return:
+   * @Author: lj
+   * @Date: 2019/10/25 16:18
+   */
+    function submitForm(){
+        var rtnVal = null;
+        var roleId = $("#form_role input[name=roleId]").val();//角色ID
+        var roleName = $("#form_role input[name=roleName]").val();//角色名称
+        var description = $("#form_role input[name=description]").val();//描述
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: "[[@{/system/role/updateRole}]]",
+            data:{
+                "roleId":roleId,
+                "roleName":roleName,
+                "description":description
+            },
+            dataType: "json",
+            timeout: 8000,
+            beforeSend: function() {
+            },
+            complete: function(XMLHttpRequest, status) {
+            },
+            success: function(res) {
+                rtnVal = res;
+            },
+            error: function(xhr, textStatus) {
+                rtnVal = JSON.parse('{"code":'+xhr.status+', "msg":"服务器错误"}');
+            }
+        });
+        return rtnVal;
+    };
+
+</script>
+
+</html>

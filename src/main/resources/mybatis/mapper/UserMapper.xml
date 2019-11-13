@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pengniao.rdpm.system.mapper.UserMapper">
+
+    <resultMap type="TUser" id="userResult">
+        <id property="userId" column="userId"/>
+        <id property="enterpriseId" column="enterpriseId"/>
+        <id property="loginName" column="loginName"/>
+        <id property="password" column="password"/>
+        <id property="userName" column="userName"/>
+        <id property="mobile" column="mobile"/>
+        <id property="email" column="email"/>
+        <id property="createTime" column="createTime"/>
+        <id property="isAdmin" column="isAdmin"/>
+        <id property="isUse" column="isUse"/>
+        <id property="noEncryPassword" column="noEncryPassword"/>
+        <association property="enterprise"  column="enterpriseId" select="com.pengniao.rdpm.system.mapper.EnterpriseMapper.getEnterpriseById"/>
+        <collection property="roleList" column="{userId=userId}" select="com.pengniao.rdpm.system.mapper.RoleMapper.getRoleByUserId" ofType="com.pengniao.rdpm.entity.TRole">
+        </collection>
+    </resultMap>
+
+    <select id="getUser" resultMap="userResult">
+        SELECT userId,enterpriseId,loginName,password,userName,mobile,email,createTime,isAdmin,isUse,noEncryPassword
+        FROM TUser WHERE enterpriseId=#{enterpriseId}
+        ORDER BY createTime DESC LIMIT
+        #{startRow,jdbcType=INTEGER},#{limit,jdbcType=INTEGER}
+    </select>
+
+    <select id="queryUserCount"  resultType="java.lang.Integer">
+        SELECT COUNT(userId) FROM TUser WHERE enterpriseId=#{enterpriseId}
+    </select>
+
+    <select id="getUserByLoginName" resultMap="userResult">
+        SELECT userId,enterpriseId,loginName,password,userName,mobile,email,createTime,isAdmin,isUse,noEncryPassword
+        FROM TUser
+        WHERE loginName = #{loginName}
+    </select>
+
+    <insert id="insertUser" parameterType="com.pengniao.rdpm.entity.TUser">
+		INSERT INTO TUser(userId,enterpriseId,loginName,password,userName,mobile,email,createTime,isAdmin,isUse,noEncryPassword)
+		VALUES(#{userId},#{enterpriseId},#{loginName},#{password},#{userName},#{mobile},#{email},#{createTime},#{isAdmin},#{isUse},#{noEncryPassword})
+	</insert>
+
+    <update id="updateUser" parameterType="com.pengniao.rdpm.entity.TUser">
+		UPDATE TUser SET loginName=#{loginName},userName=#{userName},mobile=#{mobile},email=#{email}
+		WHERE userId =#{userId}
+	</update>
+
+    <update id="updateUserBase" parameterType="com.pengniao.rdpm.entity.TUser">
+		UPDATE TUser SET loginName=#{loginName},userName=#{userName},password=#{password},mobile=#{mobile},email=#{email}
+		WHERE userId =#{userId}
+	</update>
+
+
+    <select id="getUserByUserId" resultMap="userResult">
+        SELECT userId,enterpriseId,loginName,password,userName,mobile,email,createTime,isAdmin,isUse,noEncryPassword
+        FROM TUser
+        WHERE userId = #{userId}
+    </select>
+
+    <delete id="deleteUserById" parameterType="String">
+        DELETE FROM TUser WHERE userId=#{userId}
+    </delete>
+
+    <update id="updateUserIsUse" >
+		UPDATE TUser SET isUse=#{isUse}
+		WHERE userId = #{userId}
+	</update>
+
+    <update id="updatePassword" >
+		UPDATE TUser SET password=#{password},noEncryPassword=#{noEncryPassword}
+		WHERE userId = #{userId}
+	</update>
+
+</mapper>

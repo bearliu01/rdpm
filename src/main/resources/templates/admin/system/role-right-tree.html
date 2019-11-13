@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>角色-赋权限</title>
+
+    <link rel="stylesheet" type="text/css"  th:href= "@{/css/admin.css}" />
+    <link rel="stylesheet" type="text/css"  th:href= "@{/jqGrid/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css"  th:href= "@{/css/loading.css}">
+    <link rel="stylesheet" type="text/css"  th:href= "@{/layui/css/layui.css}" />
+    <!--<link rel="stylesheet" type="text/css"  th:href= "@{/ztree/css/metroStyle/metroStyle.css}" />-->
+
+    <script type="text/javascript" th:src="@{/js/jquery-1.11.1.js}" ></script>
+    <script type="text/javascript" th:src="@{/layui/layui.js}" ></script>
+    <script type="text/javascript" th:src="@{/js/request-param.js}"></script>
+    <script type="text/javascript" th:src="@{/ztree/js/jquery.ztree.core.js}" ></script>
+    <script type="text/javascript" th:src="@{/ztree/js/jquery.ztree.excheck.js}" ></script>
+
+</head>
+<body>
+<div class="containerPen">
+    <div class="loading">
+        <div class="slice">
+            <div data-loader="circle-side"></div>
+        </div>
+    </div>
+</div>
+<div class="layui-fluid larry-wrapper form-margin" >
+    <ul id="treeRight" class="ztree" style="padding-bottom:30px">
+    </ul>
+</div>
+<input id="hid_roleId" type="hidden" th:value="${roleId}" />
+</body>
+
+<script>
+    $(window).load(function() {
+        $('.containerPen').hide();
+    });
+
+    var setting = {
+        check: {
+            enable: true,
+            nocheckInherit: false
+        },
+        data: {
+            simpleData: {
+                enable: true
+            }
+        }
+    };
+
+    $(document).ready(function() {
+        getRight($("#hid_roleId").val());
+    })
+
+    /** 功能描述: 获取权限
+     * @param null
+     * @return:
+     * @Author: lj
+     * @Date: 2019/10/24 16:28
+     */
+    function getRight(roleId){
+        /**获取角色权限**/
+        $.ajax({
+            url : '[[@{/system/right/getRoleRightByRoleId}]]',
+            data :{
+                'roleId': roleId
+            },
+            cache : false,
+            dataType : 'json',
+            type : 'post',
+            success : function(res){
+                $.fn.zTree.init($("#treeRight"), setting, res).expandAll(true);
+            },
+            error : function(textStatus)
+            {
+                return false;
+            }
+        });
+    }
+
+    /** 功能描述: 提交权限设置
+     * @param null
+     * @return:
+     * @Author: lj
+     * @Date: 2019/10/24 16:29
+     */
+    function submitForm(){
+        //获取选择的功能
+        var treeObj = $.fn.zTree.getZTreeObj("treeRight");
+        var nodes = treeObj.getCheckedNodes(true);
+        var rightStr = '';
+        for (var i = 0; i < nodes.length; i++) {
+            rightStr += nodes[i].id + ",";
+        }
+        $.ajax({
+            type: 'post',
+            async: false,
+            url: "[[@{/system/right/setRoleRight}]]",
+            data:{
+                "roleId":$("#hid_roleId").val(),
+                "rightStr":rightStr
+            },
+            dataType: "json",
+            timeout: 8000,
+            beforeSend: function() {
+            },
+            complete: function(XMLHttpRequest, status) {
+            },
+            success: function(res) {
+                rtnVal = res;
+            },
+            error: function(xhr, textStatus) {
+                rtnVal = JSON.parse('{"code":'+xhr.status+', "msg":"服务器错误"}');
+            }
+        });
+        return rtnVal;
+    };
+</script>
+
+</html>
